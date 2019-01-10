@@ -1,47 +1,145 @@
 package ru.bvn13.imdbspider.spider.api.v1_0;
 
+import org.jsoup.nodes.Element;
 import ru.bvn13.imdbspider.exceptions.api.DataTypeNotSupportedException;
-import ru.bvn13.imdbspider.imdb.DataType;
-import ru.bvn13.imdbspider.imdb.ImdbObject;
-import ru.bvn13.imdbspider.imdb.Movie;
-import ru.bvn13.imdbspider.imdb.MovieDataType;
+import ru.bvn13.imdbspider.imdb.*;
 import ru.bvn13.imdbspider.spider.api.ApiFactory;
 import ru.bvn13.imdbspider.spider.tasker.Task;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author boyko_vn at 09.01.2019
  */
 public class ApiFactory_1_0 implements ApiFactory {
 
+    private static final String URL_MAIN = "https://www.imdb.com";
+
+    private final Pattern PATTERN_MOVIE_ID_FROM_MOVIELIST = Pattern.compile("/title/tt(\\d+)/.*");
+
+    private EnumSet<MovieDataType> defaultMovieDataType = EnumSet.of(MovieDataType.ID, MovieDataType.TITLE, MovieDataType.YEAR);
+
     @Override
     public Task taskByDataType(DataType dataType) throws DataTypeNotSupportedException {
         if (dataType instanceof MovieDataType) {
             return taskByMovieDataType((MovieDataType) dataType);
+        } else if (dataType instanceof MovieListDataType) {
+            return taskByMovieListDataType((MovieListDataType) dataType);
         } else {
-            throw new DataTypeNotSupportedException(String.format("DataType %s not supported by API v1_0!", dataType.getClass().getName()));
+            throw new DataTypeNotSupportedException(String.format("DataType %s is not supported by API v1_0!", dataType.getClass().getName()));
         }
     }
 
     @Override
-    public void fulfillImdbObject(ImdbObject imdbObject, Task task) {
+    public void fillUpImdbObject(ImdbObject imdbObject, Task task) {
         if (imdbObject instanceof Movie) {
             if (task.getDataType() instanceof MovieDataType) {
-                fulfillMovie((Movie) imdbObject, task);
+                fillUpMovie((Movie) imdbObject, task);
+            }
+        } else if (imdbObject instanceof MovieList) {
+            if (task.getDataType() instanceof MovieListDataType) {
+                fillUpMovieList((MovieList) imdbObject, task);
             }
         }
     }
 
     private Task taskByMovieDataType(MovieDataType movieDataType) {
+        Task t = new Task();
+        t.setDataType(movieDataType);
         switch (movieDataType) {
-            case TITLE: return new Task();
-            default: return null;
+            case ID:
+                t.setPostprocess((task, s) -> {
+                    Matcher matcher = PATTERN_MOVIE_ID_FROM_MOVIELIST.matcher(task.getUrl());
+                    if (matcher.find()) {
+                        task.setResultType(String.class);
+                        task.setResult(matcher.group(1));
+                    }
+                });
+                break;
+            case TITLE:
+                t.setCssSelector("#title-overview-widget > div.vital > div.title_block > div > div.titleBar > div.title_wrapper > h1");
+                t.setPostprocess((task, s) -> {
+                    task.setResultType(String.class);
+                    task.setResult(task.getCssSelectorResult().first().wholeText().trim());
+                });
+                break;
+            case YEAR:
+                t.setCssSelector("#titleYear > a");
+                t.setPostprocess((task, s) -> {
+                    task.setResultType(Integer.class);
+                    if (task.getCssSelectorResult().size() > 0) {
+                        try {
+                            task.setResult(Integer.parseInt(task.getCssSelectorResult().first().text().trim()));
+                        } catch (NumberFormatException e) {
+                            task.setResult(-1);
+                        }
+                    } else {
+                        task.setResult(-1);
+                    }
+                });
+                break;
         }
+        return t;
     }
 
-    private void fulfillMovie(Movie movie, Task task) {
+    private Task taskByMovieListDataType(MovieListDataType movieListDataType) {
+        Task t = new Task();
+        t.setDataType(movieListDataType);
+        switch (movieListDataType) {
+            case ELEMENTS:
+                t.setCssSelector("#main > div > div.findSection > table > tbody > tr > td.result_text");
+                t.setResultType(List.class);
+                t.setPostprocess((task, s) -> {
+                    for (Element element : task.getCssSelectorResult()) {
+                        Element link = element.select("a").first();
+                        if (!defaultMovieDataType.contains(MovieDataType.ID)) {
+                            defaultMovieDataType.add(MovieDataType.ID);
+                        }
+                        Task movieTask = this.taskByMovieDataType(MovieDataType.ID)
+                                .setParentTask(task)
+                                .setUrl(String.format("%s%s", URL_MAIN, link.attr("href")));
+                        task.getNestedTasks().add(movieTask);
+                        defaultMovieDataType.forEach(movieDataType -> movieTask.getNestedTasks().add(this.taskByMovieDataType(movieDataType)
+                                .setParentTask(movieTask)
+                                .setUrl(String.format("%s%s", URL_MAIN, link.attr("href")))));
+                    }
+                });
+                break;
+        }
+        return t;
+    }
+
+    private void fillUpMovie(Movie movie, Task task) {
         switch ((MovieDataType) task.getDataType()) {
-            case TITLE: movie.setTitle(task.getResult()); break;
+            case ID:
+                movie.setUrl(task.getUrl());
+                movie.setId((String) task.getResult());
+                break;
+            case TITLE:
+                movie.setTitle((String) task.getResult());
+                break;
+            case YEAR:
+                movie.setYear((Integer) task.getResult());
+                break;
         }
     }
 
+    private void fillUpMovieList(MovieList movieList, Task task) {
+        switch ((MovieListDataType) task.getDataType()) {
+            case ELEMENTS:
+                movieList.setUrl(task.getUrl());
+                break;
+        }
+    }
+
+    public EnumSet<MovieDataType> getDefaultMovieDataType() {
+        return defaultMovieDataType;
+    }
+
+    public void setDefaultMovieDataType(EnumSet<MovieDataType> defaultMovieDataType) {
+        this.defaultMovieDataType = defaultMovieDataType;
+    }
 }

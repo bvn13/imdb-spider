@@ -1,9 +1,13 @@
 package ru.bvn13.imdbspider;
 
+import ru.bvn13.imdbspider.exceptions.ImdbSpiderException;
 import ru.bvn13.imdbspider.exceptions.api.DataTypeNotSupportedException;
-import ru.bvn13.imdbspider.imdb.Movie;
 import ru.bvn13.imdbspider.imdb.MovieDataType;
+import ru.bvn13.imdbspider.imdb.MovieList;
+import ru.bvn13.imdbspider.imdb.MovieListDataType;
 import ru.bvn13.imdbspider.spider.api.v1_0.ApiFactory_1_0;
+import ru.bvn13.imdbspider.spider.composer.ImdbObjectComposerFactory;
+import ru.bvn13.imdbspider.spider.composer.MovieListComposer;
 import ru.bvn13.imdbspider.spider.tasker.Manager;
 import ru.bvn13.imdbspider.spider.tasker.Task;
 import ru.bvn13.imdbspider.spider.api.ApiFactory;
@@ -20,58 +24,59 @@ import java.util.concurrent.ExecutionException;
  */
 public class ImdbSpider {
 
-    private static final String URL_MAIN = "https://www.imdb.com/";
     private static final String URL_SEARCH_TITLE = "https://www.imdb.com/find?ref_=nv_sr_fn&q={{title}}&s=tt";
 
     private Manager manager;
 
     private ApiFactory apiFactory;
+    private ImdbObjectComposerFactory imdbObjectComposerFactory;
 
     public static ImdbSpider withApi_1_0() {
-        return new ImdbSpider(new ApiFactory_1_0());
+        ApiFactory apiFactory = new ApiFactory_1_0();
+        return new ImdbSpider(apiFactory, new ImdbObjectComposerFactory(apiFactory));
     }
 
 
-    public ImdbSpider(ApiFactory apiFactory) {
+    public ImdbSpider(ApiFactory apiFactory, ImdbObjectComposerFactory imdbObjectComposerFactory) {
+        this.apiFactory = apiFactory;
+        this.imdbObjectComposerFactory = imdbObjectComposerFactory;
 
         manager = new Manager();
-
     }
 
-    public List<Movie> searchMovieByTitle(String title) {
+    public MovieList searchMovieByTitle(String title) throws ImdbSpiderException {
         return searchMovieByTitle(title, 10);
     }
 
-    public List<Movie> searchMovieByTitle(String title, int maxCount) {
+    public MovieList searchMovieByTitle(String title, int maxCount) throws ImdbSpiderException {
         return searchMovieByTitle(title, maxCount, EnumSet.of(MovieDataType.TITLE));
     }
 
-    public List<Movie> searchMovieByTitle(String title, int maxCount, EnumSet<MovieDataType> dataTypes) {
+    public MovieList searchMovieByTitle(String title, int maxCount, EnumSet<MovieDataType> dataTypes) throws ImdbSpiderException {
 
         String url = URL_SEARCH_TITLE.replace("{{title}}", URLEncoder.encode(title, Charset.forName("utf-8")));
 
         List<Task> tasks = new ArrayList<>();
 
-        for (MovieDataType mdt : MovieDataType.values()) {
-            if (dataTypes.contains(mdt)) {
-                try {
-                    tasks.add(apiFactory.taskByDataType(mdt));
-                } catch (DataTypeNotSupportedException e) {
-                    //do nothing
-                    e.printStackTrace();
-                }
-            }
+        try {
+            Task t1 = apiFactory.taskByDataType(MovieListDataType.ELEMENTS);
+            t1.setUrl(url);
+            tasks.add(t1);
+        } catch (DataTypeNotSupportedException e) {
+            throw e;
         }
 
         try {
-            tasks = manager.processTasks(tasks);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            manager.processTasks(tasks);
+        } catch (ExecutionException | InterruptedException e) {
+            throw new ImdbSpiderException("Error has been occurred!", e);
         }
 
-        return null;
+
+        MovieListComposer movieListComposer = (MovieListComposer) imdbObjectComposerFactory.getComposer(MovieList.class);
+        MovieList movieList = movieListComposer.compose(tasks.get(0));
+
+        return movieList;
 
     }
 

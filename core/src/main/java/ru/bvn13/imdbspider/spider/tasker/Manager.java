@@ -1,7 +1,8 @@
 package ru.bvn13.imdbspider.spider.tasker;
 
+import ru.bvn13.imdbspider.exceptions.extractor.HtmlExtractorException;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -18,7 +19,7 @@ public class Manager {
     }
 
 
-    public List<Task> processTasks(List<Task> allTasks) throws ExecutionException, InterruptedException {
+    public void processTasks(List<Task> allTasks) throws ExecutionException, InterruptedException {
 
         Map<String, List<Task>> groupedTasks = new ConcurrentHashMap<>(allTasks.size());
 
@@ -35,24 +36,26 @@ public class Manager {
             filteredTasks.add(task);
         }
 
-        List<Task> result = Collections.synchronizedList(new ArrayList<>());
-
         groupedTasks.entrySet().parallelStream().forEach(stringListEntry -> {
-            Future<List<Task>> r = executor.submit(new Worker(stringListEntry.getKey(), stringListEntry.getValue()));
-            while (!r.isDone()) {
-                Thread.yield();
-            }
+            Worker w = new Worker(stringListEntry.getKey(), stringListEntry.getValue());
             try {
-                result.addAll(r.get());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
+                w.run();
+            } catch (HtmlExtractorException e) {
                 e.printStackTrace();
             }
         });
 
+        List<Task> nextTasks = new ArrayList<>();
 
-        return result;
+        for (Task task : allTasks) {
+            if (task.hasNextTasks()) {
+                nextTasks.addAll(task.getNestedTasks());
+            }
+        }
+
+        if (!nextTasks.isEmpty()) {
+            processTasks(nextTasks);
+        }
 
     }
 

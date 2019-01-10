@@ -5,7 +5,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.bvn13.imdbspider.ImdbSpider;
+import ru.bvn13.imdbspider.exceptions.ImdbSpiderException;
 import ru.bvn13.imdbspider.imdb.Movie;
+import ru.bvn13.imdbspider.imdb.MovieList;
 
 import java.util.List;
 
@@ -21,6 +23,10 @@ public class AppTest
 
     @Test
     public void searchTerminatorTest() {
-        List<Movie> result = spider.searchMovieByTitle("Терминатор", 5);
+        try {
+            MovieList result = spider.searchMovieByTitle("test", 5);
+        } catch (ImdbSpiderException e) {
+            e.printStackTrace();
+        }
     }
 }

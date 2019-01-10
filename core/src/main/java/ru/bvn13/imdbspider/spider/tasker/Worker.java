@@ -2,8 +2,10 @@ package ru.bvn13.imdbspider.spider.tasker;
 
 import ru.bvn13.imdbspider.exceptions.ImdbSpiderException;
 import ru.bvn13.imdbspider.exceptions.extractor.HtmlExtractorException;
+import ru.bvn13.imdbspider.exceptions.processor.HtmlProcessorException;
 import ru.bvn13.imdbspider.spider.extractor.HtmlExtractor;
 import ru.bvn13.imdbspider.spider.processor.HtmlProcessor;
+import ru.bvn13.imdbspider.spider.processor.JsoupHtmlProcessor;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -11,7 +13,7 @@ import java.util.concurrent.*;
 /**
  * @author boyko_vn at 09.01.2019
  */
-public class Worker implements Callable<List<Task>> {
+public class Worker {
 
     private final String url;
     private final List<Task> tasks;
@@ -26,42 +28,33 @@ public class Worker implements Callable<List<Task>> {
         this.tasks = tasks;
 
         this.htmlExtractor = new HtmlExtractor();
-        this.htmlProcessor = new HtmlProcessor();
+        this.htmlProcessor = new JsoupHtmlProcessor();
 
         this.executor = Executors.newCachedThreadPool();
     }
 
 
-    @Override
-    public List<Task> call() throws Exception {
-        Future<String> result = executor.submit(() -> htmlExtractor.getHtml(url));
-        while (!result.isDone()) {
-            Thread.yield();
-        }
+    public Boolean run() throws HtmlExtractorException {
 
-        final String html;
-        try {
-            html = result.get();
-        } catch (InterruptedException e) {
-            throw new ImdbSpiderException("Interrupted", e);
-        } catch (ExecutionException e) {
-            throw new HtmlExtractorException("Exception has been occurred", e);
-        }
+        final String html = htmlExtractor.getHtml(url);
 
         tasks.parallelStream().forEach(task -> {
-            Future<String> taskResult = executor.submit(() -> htmlProcessor.process(html, task.getXpathPattern()));
-            while (!taskResult.isDone()) {
-                Thread.yield();
-            }
+
             try {
-                task.setResult(taskResult.get());
-            } catch (InterruptedException e) {
-                task.setException(new ImdbSpiderException("Interrupted", e));
-            } catch (ExecutionException e) {
-                task.setException(new ImdbSpiderException("Exception has been occurred", e));
+                if (task.getCssSelector() != null && !task.getCssSelector().isEmpty()) {
+                    task.setCssSelectorResult(htmlProcessor.process(html, task.getCssSelector()));
+                }
+
+                if (task.getPostprocess() != null) {
+                    task.getPostprocess().accept(task, html);
+                }
+            } catch (HtmlProcessorException e) {
+                task.setException(new ImdbSpiderException(e));
+                e.printStackTrace();
             }
+
         });
 
-        return tasks;
+        return true;
     }
 }

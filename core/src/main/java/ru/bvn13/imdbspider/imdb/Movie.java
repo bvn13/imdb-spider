@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Movie extends ImdbObject {
 
     private String title;
+    private String originalTitle;
+    private Integer year;
     private Map<String, String> akas = new ConcurrentHashMap<>(50);
 
 
@@ -18,6 +20,22 @@ public class Movie extends ImdbObject {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getOriginalTitle() {
+        return originalTitle;
+    }
+
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
     }
 
     public Map<String, String> getAkas() {

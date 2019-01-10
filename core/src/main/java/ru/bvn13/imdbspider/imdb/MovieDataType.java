@@ -7,7 +7,10 @@ import java.util.EnumSet;
  */
 public enum MovieDataType implements DataType {
 
-    TITLE("title")
+    ID("id"),
+    TITLE("title"),
+    YEAR("year"),
+    AKAS("akas")
 
     ;
 

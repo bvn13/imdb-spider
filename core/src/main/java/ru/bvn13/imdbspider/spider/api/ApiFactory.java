@@ -12,6 +12,6 @@ public interface ApiFactory {
 
     Task taskByDataType(DataType dataType) throws DataTypeNotSupportedException;
 
-    void fulfillImdbObject(ImdbObject imdbObject, Task task);
+    void fillUpImdbObject(ImdbObject imdbObject, Task task);
 
 }

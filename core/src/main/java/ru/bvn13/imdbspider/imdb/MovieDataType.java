@@ -9,6 +9,7 @@ public enum MovieDataType implements DataType {
 
     ID("id"),
     TITLE("title"),
+    ORIGINAL_TITLE("original_title"),
     YEAR("year"),
     AKAS("akas")
 

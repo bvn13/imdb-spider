@@ -20,7 +20,8 @@ public class ApiFactory_1_0 implements ApiFactory {
 
     private final Pattern PATTERN_MOVIE_ID_FROM_MOVIELIST = Pattern.compile("/title/tt(\\d+)/.*");
 
-    private EnumSet<MovieDataType> defaultMovieDataType = EnumSet.of(MovieDataType.ID, MovieDataType.TITLE, MovieDataType.YEAR);
+    private EnumSet<MovieDataType> defaultMovieDataTypeSet = EnumSet.of(MovieDataType.ID, MovieDataType.TITLE, MovieDataType.YEAR);
+    private EnumSet<MovieDataType> movieDataTypeSet;
 
     @Override
     public Task taskByDataType(DataType dataType) throws DataTypeNotSupportedException {
@@ -66,6 +67,17 @@ public class ApiFactory_1_0 implements ApiFactory {
                     task.setResult(task.getCssSelectorResult().first().wholeText().trim());
                 });
                 break;
+            case ORIGINAL_TITLE:
+                t.setCssSelector("#title-overview-widget > div.vital > div.title_block > div > div.titleBar > div.title_wrapper > div.originalTitle");
+                t.setPostprocess((task, s) -> {
+                    task.setResultType(String.class);
+                    if (task.getCssSelectorResult().size() > 0) {
+                        task.setResult(task.getCssSelectorResult().first().ownText());
+                    } else {
+                        task.setResult("");
+                    }
+                });
+                break;
             case YEAR:
                 t.setCssSelector("#titleYear > a");
                 t.setPostprocess((task, s) -> {
@@ -102,14 +114,17 @@ public class ApiFactory_1_0 implements ApiFactory {
                             }
                         }
                         Element link = element.select("a").first();
-                        if (!defaultMovieDataType.contains(MovieDataType.ID)) {
-                            defaultMovieDataType.add(MovieDataType.ID);
+                        if (movieDataTypeSet == null) {
+                            movieDataTypeSet = defaultMovieDataTypeSet;
+                        }
+                        if (!movieDataTypeSet.contains(MovieDataType.ID)) {
+                            movieDataTypeSet.add(MovieDataType.ID);
                         }
                         Task movieTask = this.taskByMovieDataType(MovieDataType.ID)
                                 .setParentTask(task)
                                 .setUrl(String.format("%s%s", URL_MAIN, link.attr("href")));
                         task.getNestedTasks().add(movieTask);
-                        defaultMovieDataType.forEach(movieDataType -> movieTask.getNestedTasks().add(this.taskByMovieDataType(movieDataType)
+                        movieDataTypeSet.forEach(movieDataType -> movieTask.getNestedTasks().add(this.taskByMovieDataType(movieDataType)
                                 .setParentTask(movieTask)
                                 .setUrl(String.format("%s%s", URL_MAIN, link.attr("href")))));
                     }
@@ -128,6 +143,9 @@ public class ApiFactory_1_0 implements ApiFactory {
             case TITLE:
                 movie.setTitle((String) task.getResult());
                 break;
+            case ORIGINAL_TITLE:
+                movie.setOriginalTitle((String) task.getResult());
+                break;
             case YEAR:
                 movie.setYear((Integer) task.getResult());
                 break;
@@ -142,11 +160,18 @@ public class ApiFactory_1_0 implements ApiFactory {
         }
     }
 
-    public EnumSet<MovieDataType> getDefaultMovieDataType() {
-        return defaultMovieDataType;
+    @Override
+    public EnumSet<MovieDataType> getDefaultMovieDataTypeSet() {
+        return defaultMovieDataTypeSet;
     }
 
-    public void setDefaultMovieDataType(EnumSet<MovieDataType> defaultMovieDataType) {
-        this.defaultMovieDataType = defaultMovieDataType;
+    @Override
+    public void setMovieDataTypeSet(EnumSet<MovieDataType> movieDataTypeSet) {
+        this.movieDataTypeSet = movieDataTypeSet;
+    }
+
+    @Override
+    public EnumSet<MovieDataType> getMovieDataTypeSet() {
+        return movieDataTypeSet;
     }
 }

@@ -56,6 +56,8 @@ public class ImdbSpider {
 
     public MovieList searchMovieByTitle(String title, int maxCount, EnumSet<MovieDataType> dataTypes) throws ImdbSpiderException {
 
+        apiFactory.setMovieDataTypeSet(dataTypes);
+
         String url = URL_SEARCH_TITLE.replace("{{title}}", URLEncoder.encode(title, Charset.forName("utf-8")));
 
         List<Task> tasks = new ArrayList<>();

@@ -19,6 +19,8 @@ public class Task {
     private String cssSelector;
     private Elements cssSelectorResult;
 
+    private Integer restrictionByCount;
+
     private Class resultType;
     private Object result;
 
@@ -141,6 +143,15 @@ public class Task {
 
     public Task setParentTask(Task parentTask) {
         this.parentTask = parentTask;
+        return this;
+    }
+
+    public Integer getRestrictionByCount() {
+        return restrictionByCount;
+    }
+
+    public Task setRestrictionByCount(Integer restrictionByCount) {
+        this.restrictionByCount = restrictionByCount;
         return this;
     }
 }

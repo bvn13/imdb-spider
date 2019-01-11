@@ -14,7 +14,10 @@ import ru.bvn13.imdbspider.spider.api.ApiFactory;
 
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -45,7 +48,7 @@ public class ImdbSpider {
     }
 
     public MovieList searchMovieByTitle(String title) throws ImdbSpiderException {
-        return searchMovieByTitle(title, 10);
+        return searchMovieByTitle(title, 0);
     }
 
     public MovieList searchMovieByTitle(String title, int maxCount) throws ImdbSpiderException {
@@ -61,16 +64,23 @@ public class ImdbSpider {
         try {
             Task t1 = apiFactory.taskByDataType(MovieListDataType.ELEMENTS);
             t1.setUrl(url);
+            if (maxCount > 0) {
+                t1.setRestrictionByCount(maxCount);
+            }
             tasks.add(t1);
         } catch (DataTypeNotSupportedException e) {
             throw e;
         }
 
+        LocalDateTime dateStart = LocalDateTime.now();
         try {
             manager.processTasks(tasks);
         } catch (ExecutionException | InterruptedException e) {
             throw new ImdbSpiderException("Error has been occurred!", e);
         }
+        LocalDateTime dateEnd = LocalDateTime.now();
+        Duration diff = Duration.between(dateStart, dateEnd);
+        System.out.println("TIME SPENT: "+(diff.toMillis())+" msec");
 
 
         MovieListComposer movieListComposer = (MovieListComposer) imdbObjectComposerFactory.getComposer(MovieList.class);

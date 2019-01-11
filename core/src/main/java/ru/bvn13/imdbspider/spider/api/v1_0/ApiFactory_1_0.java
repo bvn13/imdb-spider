@@ -93,7 +93,14 @@ public class ApiFactory_1_0 implements ApiFactory {
                 t.setCssSelector("#main > div > div.findSection > table > tbody > tr > td.result_text");
                 t.setResultType(List.class);
                 t.setPostprocess((task, s) -> {
+                    int count = 0;
                     for (Element element : task.getCssSelectorResult()) {
+                        count++;
+                        if (task.getRestrictionByCount() != null) {
+                            if (count > task.getRestrictionByCount()) {
+                                break;
+                            }
+                        }
                         Element link = element.select("a").first();
                         if (!defaultMovieDataType.contains(MovieDataType.ID)) {
                             defaultMovieDataType.add(MovieDataType.ID);

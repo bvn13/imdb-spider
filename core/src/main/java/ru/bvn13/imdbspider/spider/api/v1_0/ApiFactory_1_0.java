@@ -5,17 +5,13 @@ import ru.bvn13.imdbspider.exceptions.ImdbSpiderException;
 import ru.bvn13.imdbspider.exceptions.api.DataTypeNotSupportedException;
 import ru.bvn13.imdbspider.imdb.*;
 import ru.bvn13.imdbspider.spider.api.ApiFactory;
-import ru.bvn13.imdbspider.spider.composer.MovieListComposer;
 import ru.bvn13.imdbspider.spider.tasker.Task;
 
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

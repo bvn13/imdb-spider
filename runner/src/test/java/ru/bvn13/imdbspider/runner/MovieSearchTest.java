@@ -40,7 +40,7 @@ public class MovieSearchTest
     }
 
     @Test
-    public void testSearchTerminatorReturnsJson() throws ImdbSpiderException, JsonProcessingException {
+    public void testSearchTerminatorReturningJson() throws ImdbSpiderException, JsonProcessingException {
         MovieList result = spider.searchMovieByTitle("Терминатор", 5, EnumSet.of(MovieDataType.ID, MovieDataType.TITLE, MovieDataType.ORIGINAL_TITLE, MovieDataType.YEAR));
 
         ObjectMapper mapper = new ObjectMapper();

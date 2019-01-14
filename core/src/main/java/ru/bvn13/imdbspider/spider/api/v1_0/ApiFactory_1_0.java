@@ -1,13 +1,21 @@
 package ru.bvn13.imdbspider.spider.api.v1_0;
 
 import org.jsoup.nodes.Element;
+import ru.bvn13.imdbspider.exceptions.ImdbSpiderException;
 import ru.bvn13.imdbspider.exceptions.api.DataTypeNotSupportedException;
 import ru.bvn13.imdbspider.imdb.*;
 import ru.bvn13.imdbspider.spider.api.ApiFactory;
+import ru.bvn13.imdbspider.spider.composer.MovieListComposer;
 import ru.bvn13.imdbspider.spider.tasker.Task;
 
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,10 +26,36 @@ public class ApiFactory_1_0 implements ApiFactory {
 
     private static final String URL_MAIN = "https://www.imdb.com";
 
+    private static final String URL_SEARCH_TITLE = "https://www.imdb.com/find?ref_=nv_sr_fn&q={{title}}&s=tt";
+
     private final Pattern PATTERN_MOVIE_ID_FROM_MOVIELIST = Pattern.compile("/title/tt(\\d+)/.*");
 
     private EnumSet<MovieDataType> defaultMovieDataTypeSet = EnumSet.of(MovieDataType.ID, MovieDataType.TITLE, MovieDataType.YEAR);
     private EnumSet<MovieDataType> movieDataTypeSet;
+
+    @Override
+    public List<Task> createTasksForSearchMovieByTitle(String title, int maxCount, EnumSet<MovieDataType> dataTypes) throws ImdbSpiderException {
+
+        setMovieDataTypeSet(dataTypes);
+
+        String url = URL_SEARCH_TITLE.replace("{{title}}", URLEncoder.encode(title, Charset.forName("utf-8")));
+
+        List<Task> tasks = new ArrayList<>();
+
+        try {
+            Task t1 = taskByDataType(MovieListDataType.ELEMENTS);
+            t1.setUrl(url);
+            if (maxCount > 0) {
+                t1.setRestrictionByCount(maxCount);
+            }
+            tasks.add(t1);
+        } catch (DataTypeNotSupportedException e) {
+            throw e;
+        }
+
+        return tasks;
+
+    }
 
     @Override
     public Task taskByDataType(DataType dataType) throws DataTypeNotSupportedException {

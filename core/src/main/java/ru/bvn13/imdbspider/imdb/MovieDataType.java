@@ -11,6 +11,22 @@ public enum MovieDataType implements DataType {
     TITLE("title"),
     ORIGINAL_TITLE("original_title"),
     YEAR("year"),
+    POSTER("poster"),
+    STORYLINE("storyline"),
+    RANDOM_TAGLINE("random_tagline"),
+    GENRES("genres"),
+    CERTIFICATE("certificate"),
+    OFFICIAL_SITES("official_sites"),
+    COUNTRIES("countries"),
+    LANGUAGES("languages"),
+    RELEASE_DATE("release_date"),
+    BUDGET("budget"),
+    CUMULATIVE_WORLDWIDE_GROSS("cumulative worldwide gross"),
+    RUNTIME("runtime"),
+    SOUND_MIXES("sound_mixes"),
+    COLOR("color"),
+    ASPECT_RATIO("aspect_ratio"),
+    TAGLINES("taglines"),
     AKAS("akas")
 
     ;

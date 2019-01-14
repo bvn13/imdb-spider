@@ -7,7 +7,9 @@ import ru.bvn13.imdbspider.spider.extractor.HtmlExtractor;
 import ru.bvn13.imdbspider.spider.processor.HtmlProcessor;
 import ru.bvn13.imdbspider.spider.processor.JsoupHtmlProcessor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 /**
@@ -21,22 +23,17 @@ public class Worker {
     private final HtmlExtractor htmlExtractor;
     private final HtmlProcessor htmlProcessor;
 
-    private final ExecutorService executor;
-
     public Worker(String url, List<Task> tasks) {
         this.url = url;
         this.tasks = tasks;
 
         this.htmlExtractor = new HtmlExtractor();
         this.htmlProcessor = new JsoupHtmlProcessor();
-
-        this.executor = Executors.newCachedThreadPool();
     }
 
+    public Boolean run(Map<String, String> httpRequestHeaders) throws HtmlExtractorException {
 
-    public Boolean run() throws HtmlExtractorException {
-
-        final String html = htmlExtractor.getHtml(url);
+        final String html = htmlExtractor.getHtml(url, httpRequestHeaders);
 
         tasks.parallelStream().forEach(task -> {
 

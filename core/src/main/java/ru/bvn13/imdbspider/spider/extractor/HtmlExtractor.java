@@ -34,7 +34,7 @@ public class HtmlExtractor {
                 : resultString;
     }
 
-    public String getHtml(String url) throws HtmlExtractorException {
+    public String getHtml(String url, Map<String, String> headers) throws HtmlExtractorException {
 
         URL obj = null;
 
@@ -52,6 +52,9 @@ public class HtmlExtractor {
         }
 
         connection.setRequestProperty("Accept", "text/html");
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            connection.setRequestProperty(header.getKey(), header.getValue());
+        }
 
         try {
             connection.setRequestMethod("GET");

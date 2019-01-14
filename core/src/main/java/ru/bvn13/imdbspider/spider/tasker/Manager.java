@@ -3,6 +3,7 @@ package ru.bvn13.imdbspider.spider.tasker;
 import ru.bvn13.imdbspider.exceptions.extractor.HtmlExtractorException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -12,14 +13,13 @@ import java.util.concurrent.*;
  */
 public class Manager {
 
-    private ExecutorService executor;
+    private Map<String, String> httpRequestHeaders = new HashMap<>();
 
-    public Manager() {
-        this.executor = Executors.newCachedThreadPool();
+    public void addHttpRequestHeader(String key, String value) {
+        this.httpRequestHeaders.put(key, value);
     }
 
-
-    public void processTasks(List<Task> allTasks) throws ExecutionException, InterruptedException {
+    public void processTasks(List<Task> allTasks) {
 
         Map<String, List<Task>> groupedTasks = new ConcurrentHashMap<>(allTasks.size());
 
@@ -39,7 +39,7 @@ public class Manager {
         groupedTasks.entrySet().parallelStream().forEach(stringListEntry -> {
             Worker w = new Worker(stringListEntry.getKey(), stringListEntry.getValue());
             try {
-                w.run();
+                w.run(httpRequestHeaders);
             } catch (HtmlExtractorException e) {
                 e.printStackTrace();
             }

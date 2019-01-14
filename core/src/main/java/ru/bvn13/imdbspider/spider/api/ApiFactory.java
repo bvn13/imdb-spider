@@ -7,6 +7,7 @@ import ru.bvn13.imdbspider.imdb.ImdbObject;
 import ru.bvn13.imdbspider.imdb.MovieDataType;
 import ru.bvn13.imdbspider.spider.tasker.Task;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -16,6 +17,10 @@ import java.util.List;
 public interface ApiFactory {
 
     List<Task> createTasksForSearchMovieByTitle(String title, int maxCount, EnumSet<MovieDataType> dataTypes) throws ImdbSpiderException;
+
+    default List<Task> createTasksForSearchMovieByTitle(String title, int maxCount, MovieDataType... dataTypes) throws ImdbSpiderException {
+        return createTasksForSearchMovieByTitle(title, maxCount, EnumSet.copyOf(Arrays.asList(dataTypes)));
+    }
 
     Task taskByDataType(DataType dataType) throws DataTypeNotSupportedException;
 

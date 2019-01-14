@@ -165,20 +165,29 @@ public class ApiFactory_1_0 implements ApiFactory {
     }
 
     private void fillUpMovie(Movie movie, Task task) {
+        boolean isDone = false;
         switch ((MovieDataType) task.getDataType()) {
             case ID:
                 movie.setUrl(task.getUrl());
                 movie.setId((String) task.getResult());
+                isDone = true;
                 break;
             case TITLE:
                 movie.setTitle((String) task.getResult());
+                isDone = true;
                 break;
             case ORIGINAL_TITLE:
                 movie.setOriginalTitle((String) task.getResult());
+                isDone = true;
                 break;
             case YEAR:
                 movie.setYear((Integer) task.getResult());
+                isDone = true;
                 break;
+        }
+
+        if (isDone) {
+            movie.getRetrievedDataTypes().add((MovieDataType) task.getDataType());
         }
     }
 
@@ -186,6 +195,7 @@ public class ApiFactory_1_0 implements ApiFactory {
         switch ((MovieListDataType) task.getDataType()) {
             case ELEMENTS:
                 movieList.setUrl(task.getUrl());
+                movieList.getRetrievedDataTypes().add((MovieListDataType) task.getDataType());
                 break;
         }
     }

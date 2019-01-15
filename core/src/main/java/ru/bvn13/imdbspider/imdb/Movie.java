@@ -32,7 +32,7 @@ public class Movie extends ImdbObject<MovieDataType> {
     private String color;
     private String aspectRatio;
 
-    //private List<String> taglines;
+    private TaglineList taglineList;
     private Map<String, String> akas = new ConcurrentHashMap<>(50);
 
     @Override
@@ -182,6 +182,14 @@ public class Movie extends ImdbObject<MovieDataType> {
 
     public void setAspectRatio(String aspectRatio) {
         this.aspectRatio = aspectRatio;
+    }
+
+    public TaglineList getTaglineList() {
+        return taglineList;
+    }
+
+    public void setTaglineList(TaglineList taglineList) {
+        this.taglineList = taglineList;
     }
 
     public Map<String, String> getAkas() {

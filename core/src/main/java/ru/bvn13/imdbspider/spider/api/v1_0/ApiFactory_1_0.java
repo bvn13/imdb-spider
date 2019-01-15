@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -151,6 +152,10 @@ public class ApiFactory_1_0 implements ApiFactory {
             return taskByMovieDataType((MovieDataType) dataType);
         } else if (dataType instanceof MovieListDataType) {
             return taskByMovieListDataType((MovieListDataType) dataType);
+        } else if (dataType instanceof TaglineListDataType) {
+            return taskByTaglineListDataType((TaglineListDataType) dataType);
+        } else if (dataType instanceof TaglineDataType) {
+            return taskByTaglineDataType((TaglineDataType) dataType);
         } else {
             throw new DataTypeNotSupportedException(String.format("DataType %s is not supported by API v1_0!", dataType.getClass().getName()));
         }
@@ -165,6 +170,14 @@ public class ApiFactory_1_0 implements ApiFactory {
         } else if (imdbObject instanceof MovieList) {
             if (task.getDataType() instanceof MovieListDataType) {
                 fillUpMovieList((MovieList) imdbObject, task);
+            }
+        } else if (imdbObject instanceof TaglineList) {
+            if (task.getDataType() instanceof TaglineListDataType) {
+                fillUpTaglineList((TaglineList) imdbObject, task);
+            }
+        } else if (imdbObject instanceof Tagline) {
+            if (task.getDataType() instanceof TaglineDataType) {
+                fillUpTagline((Tagline) imdbObject, task);
             }
         }
     }
@@ -314,6 +327,63 @@ public class ApiFactory_1_0 implements ApiFactory {
                 t.setCssSelector("#titleDetails > div > h4:contains(Aspect Ratio)");
                 t.setPostprocess(POSTPROCESS.GET_OWN_TEXT_OF_PARENT_MODE);
                 break;
+            case TAGLINES:
+                t.setCssSelector("#titleStoryLine > div > h4:contains(Taglines)");
+                t.setPostprocess((task, s) -> {
+                    if (task.getCssSelectorResult().size() > 0) {
+                        Elements links = task.getCssSelectorResult().first().parent().select("span > a:contains(See more)");
+                        if (links.size() > 0) {
+                            Task newTask = this.taskByTaglineListDataType(TaglineListDataType.ELEMENTS)
+                                    .setParentTask(task)
+                                    .setUrl(String.format("%s%s", URL_MAIN, links.first().attr("href")));
+                            task.getNestedTasks().add(newTask);
+                        }
+                    }
+                });
+                break;
+        }
+        return t;
+    }
+
+    private Task taskByTaglineListDataType(TaglineListDataType taglineListDataType) {
+        Task t = new Task();
+        t.setDataType(taglineListDataType);
+        switch (taglineListDataType) {
+            case ELEMENTS:
+                t.setCssSelector("#taglines_content > div.soda");
+                AtomicInteger i = new AtomicInteger(0);
+                t.setPostprocess((task, s) -> {
+                    for (Element element : task.getCssSelectorResult()) {
+                        Task newTaskId = taskByTaglineDataType(TaglineDataType.ID)
+                                .setParentTask(task)
+                                .setUrl(task.getUrl())
+                                .setResult(String.format("%d", i.getAndAdd(1)));
+                        task.getNestedTasks().add(newTaskId);
+
+                        Task newTaskText = taskByTaglineDataType(TaglineDataType.TEXT)
+                                .setParentTask(task)
+                                .setUrl(task.getUrl())
+                                .setResult(element.text());
+                        newTaskId.getNestedTasks().add(newTaskText);
+                    }
+                });
+                break;
+        }
+        return t;
+    }
+
+    private Task taskByTaglineDataType(TaglineDataType taglineDataType) {
+        Task t = new Task();
+        t.setDataType(taglineDataType);
+        switch (taglineDataType) {
+            case ID:
+                //
+                break;
+            case TEXT:
+                t.setPostprocess((task, s) -> {
+                    task.setResult(((String)task.getResult()).trim());
+                });
+                break;
         }
         return t;
     }
@@ -435,10 +505,36 @@ public class ApiFactory_1_0 implements ApiFactory {
                 movie.setAspectRatio((String) task.getResult());
                 isDone = true;
                 break;
+            case TAGLINES:
+                isDone = true;
         }
 
         if (isDone) {
             movie.getRetrievedDataTypes().add((MovieDataType) task.getDataType());
+        }
+    }
+
+    private void fillUpTaglineList(TaglineList taglineList, Task task) {
+        switch ((TaglineListDataType) task.getDataType()) {
+            case ELEMENTS:
+                taglineList.setUrl(task.getUrl());
+                taglineList.getRetrievedDataTypes().add((TaglineListDataType) task.getDataType());
+                break;
+        }
+    }
+
+    private void fillUpTagline(Tagline tagline, Task task) {
+        switch ((TaglineDataType) task.getDataType()) {
+            case ID:
+                tagline.setUrl(task.getUrl());
+                tagline.setId((String) task.getResult());
+                tagline.getRetrievedDataTypes().add((TaglineDataType) task.getDataType());
+                break;
+            case TEXT:
+                tagline.setUrl(task.getUrl());
+                tagline.setText((String) task.getResult());
+                tagline.getRetrievedDataTypes().add((TaglineDataType) task.getDataType());
+                break;
         }
     }
 

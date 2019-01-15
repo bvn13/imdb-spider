@@ -1,8 +1,5 @@
 package ru.bvn13.imdbspider.runner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.bvn13.imdbspider.ImdbSpider;
@@ -10,13 +7,22 @@ import ru.bvn13.imdbspider.exceptions.ImdbSpiderException;
 import ru.bvn13.imdbspider.imdb.Movie;
 import ru.bvn13.imdbspider.imdb.MovieDataType;
 import ru.bvn13.imdbspider.imdb.MovieList;
+import ru.bvn13.imdbspider.imdb.Tagline;
 import ru.bvn13.imdbspider.imdb.accessories.SoundMix;
+
+import static org.junit.Assert.*;
 
 
 public class MovieSearchTest {
 
     private static final String TERMINATOR_STORYLINE = "A cyborg is sent from the future on a deadly mission. He has to kill Sarah Connor, a young woman whose life will have a great significance in years to come. Sarah has only one protector - Kyle Reese - also sent from the future. The Terminator uses his exceptional intelligence and strength to find Sarah, but is there any way to stop the seemingly indestructible cyborg ?";
     private static final String TERMINATOR_POSTER_LINK = "https://m.media-amazon.com/images/M/MV5BYTViNzMxZjEtZGEwNy00MDNiLWIzNGQtZDY2MjQ1OWViZjFmXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_UX182_CR0,0,182,268_AL_.jpg";
+
+    private static final String TERMINATOR_TAGLINE_1 = "I'll be back!";
+    private static final String TERMINATOR_TAGLINE_2 = "In the Year of Darkness, 2029, the rulers of this planet devised the ultimate plan. They would reshape the Future by changing the Past. The plan required something that felt no pity. No pain. No fear. Something unstoppable. They created 'THE TERMINATOR'";
+    private static final String TERMINATOR_TAGLINE_3 = "The thing that won't die, in the nightmare that won't end.";
+    private static final String TERMINATOR_TAGLINE_4 = "Your future is in its hands.";
+    private static final String TERMINATOR_TAGLINE_5 = "La sua missione e una sola: distruggere, uccidere... (His one and only mission: to destroy, to kill...) (Italian DVD)";
 
     private static ImdbSpider spider;
 
@@ -47,7 +53,8 @@ public class MovieSearchTest {
                 MovieDataType.SOUND_MIXES,
                 MovieDataType.COLOR,
                 MovieDataType.ASPECT_RATIO,
-                MovieDataType.POSTER
+                MovieDataType.POSTER,
+                MovieDataType.TAGLINES
         );
 
 
@@ -73,6 +80,7 @@ public class MovieSearchTest {
         assertTrue(movie.isDataTypeRetrieved(MovieDataType.COLOR));
         assertTrue(movie.isDataTypeRetrieved(MovieDataType.ASPECT_RATIO));
         assertTrue(movie.isDataTypeRetrieved(MovieDataType.POSTER));
+        assertTrue(movie.isDataTypeRetrieved(MovieDataType.TAGLINES));
 
         assertEquals("0088247", movie.getId());
         assertEquals("The Terminator", movie.getOriginalTitle());
@@ -104,6 +112,11 @@ public class MovieSearchTest {
         assertEquals("$40,000,000", movie.getCumulativeWorldwideGross());
 
         assertEquals("107 min", movie.getRuntime());
+        assertEquals("Color", movie.getColor());
+        assertEquals("1.85 : 1", movie.getAspectRatio());
+
+        assertEquals(TERMINATOR_POSTER_LINK, movie.getPosterLink());
+
 
         //sound mixes
         assertTrue(movie.getSoundMixes().size() > 0);
@@ -123,10 +136,26 @@ public class MovieSearchTest {
         assertEquals("(DVD Re-Release)", descrDolby);
         assertEquals("(DTS HD Master Audio)", descrDTS);
 
-        assertEquals("Color", movie.getColor());
 
-        assertEquals("1.85 : 1", movie.getAspectRatio());
+        // taglines
+        assertNotNull(movie.getTaglineList());
+        assertEquals(5, movie.getTaglineList().getTaglines().size());
 
-        assertEquals(TERMINATOR_POSTER_LINK, movie.getPosterLink());
+        boolean hasTagline1 = false, hasTagline2 = false, hasTagline3 = false, hasTagline4 = false, hasTagline5 = false;
+        for (Tagline tagline : movie.getTaglineList().getTaglines()) {
+            switch (tagline.getText()) {
+                case TERMINATOR_TAGLINE_1 : hasTagline1 = true; break;
+                case TERMINATOR_TAGLINE_2 : hasTagline2 = true; break;
+                case TERMINATOR_TAGLINE_3 : hasTagline3 = true; break;
+                case TERMINATOR_TAGLINE_4 : hasTagline4 = true; break;
+                case TERMINATOR_TAGLINE_5 : hasTagline5 = true; break;
+            }
+        }
+
+        assertTrue(hasTagline1);
+        assertTrue(hasTagline2);
+        assertTrue(hasTagline3);
+        assertTrue(hasTagline4);
+        assertTrue(hasTagline5);
     }
 }

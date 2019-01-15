@@ -29,12 +29,12 @@ public class MovieSearchTest {
     @BeforeClass
     public static void initClass() {
         spider = ImdbSpider.withApi_1_0()
-                .addHttpRequestHeader("Content-Language", "ru-RU");
+                .addHttpRequestHeader("Content-Language", "en-EN");
     }
 
     @Test
     public void testSearchTerminator() throws ImdbSpiderException {
-        MovieList result = spider.searchMovieByTitle("Терминатор", 5,
+        MovieList result = spider.searchMovieByTitle("Terminator", 5,
                 MovieDataType.ID,
                 MovieDataType.TITLE,
                 MovieDataType.ORIGINAL_TITLE,

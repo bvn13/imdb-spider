@@ -217,4 +217,8 @@ public class ApiFactory_1_0 implements ApiFactory {
     TaglineProcessor_1_0 getTaglineProcessor() {
         return taglineProcessor;
     }
+
+    TaglineListProcessor_1_0 getTaglineListProcessor() {
+        return taglineListProcessor;
+    }
 }

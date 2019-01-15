@@ -174,7 +174,7 @@ public class MovieProcessor_1_0 extends AbstractApiProcessor_1_0 {
                     if (task.getCssSelectorResult().size() > 0) {
                         Elements links = task.getCssSelectorResult().first().parent().select("span > a:contains(See more)");
                         if (links.size() > 0) {
-                            Task newTask = getApiFactory().taskByTaglineListDataType(TaglineListDataType.ELEMENTS)
+                            Task newTask = getApiFactory().getTaglineListProcessor().taskByTaglineListDataType(TaglineListDataType.ELEMENTS)
                                     .setParentTask(task)
                                     .setUrl(String.format("%s%s", ApiFactory_1_0.URL_MAIN, links.first().attr("href")));
                             task.getNestedTasks().add(newTask);

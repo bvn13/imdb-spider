@@ -42,7 +42,22 @@ public class MovieProcessor_1_0 extends AbstractApiProcessor_1_0 {
                 break;
             case ORIGINAL_TITLE:
                 t.setCssSelector("#title-overview-widget > div.vital > div.title_block > div > div.titleBar > div.title_wrapper > div.originalTitle");
-                t.setPostprocess(ApiFactory_1_0.POSTPROCESS.GET_OWN_TEXT_OF_FIRST_ELEMENT);
+                t.setPostprocess((task, s) -> {
+                    task.setResultType(String.class);
+                    task.setResult("");
+                    if (task.getCssSelectorResult().size() > 0) {
+                        task.setResult(task.getCssSelectorResult().first().text());
+                    } else {
+                        try {
+                            Elements titles = getApiFactory().getHtmlProcessor().process(s, "#title-overview-widget > div.vital > div.title_block > div > div.titleBar > div.title_wrapper > h1"); // like title
+                            if (titles.size() > 0) {
+                                task.setResult(titles.first().ownText());
+                            }
+                        } catch (HtmlProcessorException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
                 break;
             case YEAR:
                 t.setCssSelector("#titleYear > a");

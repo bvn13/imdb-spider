@@ -5,6 +5,7 @@ import ru.bvn13.imdbspider.exceptions.api.DataTypeNotSupportedException;
 import ru.bvn13.imdbspider.imdb.DataType;
 import ru.bvn13.imdbspider.imdb.ImdbObject;
 import ru.bvn13.imdbspider.imdb.MovieDataType;
+import ru.bvn13.imdbspider.spider.processor.HtmlProcessor;
 import ru.bvn13.imdbspider.spider.tasker.Task;
 
 import java.util.Arrays;

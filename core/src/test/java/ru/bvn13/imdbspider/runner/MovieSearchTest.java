@@ -1,5 +1,7 @@
 package ru.bvn13.imdbspider.runner;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.bvn13.imdbspider.ImdbSpider;
@@ -33,7 +35,7 @@ public class MovieSearchTest {
     }
 
     @Test
-    public void testSearchTerminator() throws ImdbSpiderException {
+    public void testSearchTerminator() throws ImdbSpiderException, JsonProcessingException {
         MovieList result = spider.searchMovieByTitle("Terminator", 5,
                 MovieDataType.ID,
                 MovieDataType.TITLE,
@@ -62,6 +64,12 @@ public class MovieSearchTest {
         Movie movie = result.getMovies().get(0);
 
         System.out.println("Testing Movie #"+movie.getId()+", url: "+movie.getUrl());
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
+
+        System.out.println("==========================================");
+        System.out.println("MOVIE: \n"+json);
+        System.out.println("==========================================");
 
         assertTrue("Expected ID field presence", movie.isDataTypeRetrieved(MovieDataType.ID));
         assertTrue("Expected TITLE field presence", movie.isDataTypeRetrieved(MovieDataType.TITLE));

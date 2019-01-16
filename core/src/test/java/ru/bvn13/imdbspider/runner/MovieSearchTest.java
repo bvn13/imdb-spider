@@ -65,7 +65,7 @@ public class MovieSearchTest {
 
         System.out.println("Testing Movie #"+movie.getId()+", url: "+movie.getUrl());
         ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
+        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(movie);
 
         System.out.println("==========================================");
         System.out.println("MOVIE: \n"+json);

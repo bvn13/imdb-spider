@@ -1,9 +1,13 @@
 package ru.bvn13.imdbspider.spider.api.v1_0;
 
+import ru.bvn13.imdbspider.imdb.DataType;
+import ru.bvn13.imdbspider.imdb.ImdbObject;
+import ru.bvn13.imdbspider.spider.tasker.Task;
+
 /**
  * @author boyko_vn at 15.01.2019
  */
-abstract public class AbstractApiProcessor_1_0 {
+abstract public class AbstractApiProcessor_1_0<C extends ImdbObject, D extends Enum<?> & DataType> {
 
     protected boolean isDebug;
 
@@ -20,4 +24,8 @@ abstract public class AbstractApiProcessor_1_0 {
     public void setDebug(boolean debug) {
         isDebug = debug;
     }
+
+    abstract void fillUpImdbObject(C imdbObject, Task task);
+
+    abstract Task taskByDataType(D dataType);
 }

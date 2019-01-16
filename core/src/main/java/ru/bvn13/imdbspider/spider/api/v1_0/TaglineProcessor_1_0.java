@@ -7,13 +7,14 @@ import ru.bvn13.imdbspider.spider.tasker.Task;
 /**
  * @author boyko_vn at 15.01.2019
  */
-public class TaglineProcessor_1_0 extends AbstractApiProcessor_1_0 {
+public class TaglineProcessor_1_0 extends AbstractApiProcessor_1_0<Tagline, TaglineDataType> {
 
     public TaglineProcessor_1_0(ApiFactory_1_0 apiFactory) {
         super(apiFactory);
     }
 
-    Task taskByTaglineDataType(TaglineDataType taglineDataType) {
+    @Override
+    Task taskByDataType(TaglineDataType taglineDataType) {
         Task t = new Task();
         t.setDataType(taglineDataType);
         switch (taglineDataType) {
@@ -29,8 +30,8 @@ public class TaglineProcessor_1_0 extends AbstractApiProcessor_1_0 {
         return t;
     }
 
-
-    void fillUpTagline(Tagline tagline, Task task) {
+    @Override
+    void fillUpImdbObject(Tagline tagline, Task task) {
         switch ((TaglineDataType) task.getDataType()) {
             case ID:
                 tagline.setUrl(task.getUrl());

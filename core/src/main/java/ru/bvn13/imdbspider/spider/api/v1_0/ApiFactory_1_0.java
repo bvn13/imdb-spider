@@ -120,6 +120,8 @@ public class ApiFactory_1_0 implements ApiFactory {
     private MovieProcessor_1_0 movieProcessor;
     private TaglineListProcessor_1_0 taglineListProcessor;
     private TaglineProcessor_1_0 taglineProcessor;
+    private AkaListProcessor_1_0 akaListProcessor;
+    private AkaProcessor_1_0 akaProcessor;
 
     public ApiFactory_1_0(HtmlProcessor htmlProcessor) {
         this.htmlProcessor = htmlProcessor;
@@ -128,6 +130,8 @@ public class ApiFactory_1_0 implements ApiFactory {
         this.movieProcessor = new MovieProcessor_1_0(this);
         this.taglineListProcessor = new TaglineListProcessor_1_0(this);
         this.taglineProcessor = new TaglineProcessor_1_0(this);
+        this.akaListProcessor = new AkaListProcessor_1_0(this);
+        this.akaProcessor = new AkaProcessor_1_0(this);
     }
 
     @Override
@@ -163,13 +167,17 @@ public class ApiFactory_1_0 implements ApiFactory {
     @Override
     public Task taskByDataType(DataType dataType) throws DataTypeNotSupportedException {
         if (dataType instanceof MovieDataType) {
-            return movieProcessor.taskByMovieDataType((MovieDataType) dataType);
+            return movieProcessor.taskByDataType((MovieDataType) dataType);
         } else if (dataType instanceof MovieListDataType) {
-            return movieListProcessor.taskByMovieListDataType((MovieListDataType) dataType);
+            return movieListProcessor.taskByDataType((MovieListDataType) dataType);
         } else if (dataType instanceof TaglineListDataType) {
-            return taglineListProcessor.taskByTaglineListDataType((TaglineListDataType) dataType);
+            return taglineListProcessor.taskByDataType((TaglineListDataType) dataType);
         } else if (dataType instanceof TaglineDataType) {
-            return taglineProcessor.taskByTaglineDataType((TaglineDataType) dataType);
+            return taglineProcessor.taskByDataType((TaglineDataType) dataType);
+        } else if (dataType instanceof AkaListDataType) {
+            return akaListProcessor.taskByDataType((AkaListDataType) dataType);
+        } else if (dataType instanceof AkaDataType) {
+            return akaProcessor.taskByDataType((AkaDataType) dataType);
         } else {
             throw new DataTypeNotSupportedException(String.format("DataType %s is not supported by API v1_0!", dataType.getClass().getName()));
         }
@@ -179,19 +187,27 @@ public class ApiFactory_1_0 implements ApiFactory {
     public void fillUpImdbObject(ImdbObject imdbObject, Task task) {
         if (imdbObject instanceof Movie) {
             if (task.getDataType() instanceof MovieDataType) {
-                movieProcessor.fillUpMovie((Movie) imdbObject, task);
+                movieProcessor.fillUpImdbObject((Movie) imdbObject, task);
             }
         } else if (imdbObject instanceof MovieList) {
             if (task.getDataType() instanceof MovieListDataType) {
-                movieListProcessor.fillUpMovieList((MovieList) imdbObject, task);
+                movieListProcessor.fillUpImdbObject((MovieList) imdbObject, task);
             }
         } else if (imdbObject instanceof TaglineList) {
             if (task.getDataType() instanceof TaglineListDataType) {
-                taglineListProcessor.fillUpTaglineList((TaglineList) imdbObject, task);
+                taglineListProcessor.fillUpImdbObject((TaglineList) imdbObject, task);
             }
         } else if (imdbObject instanceof Tagline) {
             if (task.getDataType() instanceof TaglineDataType) {
-                taglineProcessor.fillUpTagline((Tagline) imdbObject, task);
+                taglineProcessor.fillUpImdbObject((Tagline) imdbObject, task);
+            }
+        } else if (imdbObject instanceof AkaList) {
+            if (task.getDataType() instanceof AkaListDataType) {
+                akaListProcessor.fillUpImdbObject((AkaList) imdbObject, task);
+            }
+        } else if (imdbObject instanceof Aka) {
+            if (task.getDataType() instanceof AkaDataType) {
+                akaProcessor.fillUpImdbObject((Aka) imdbObject, task);
             }
         }
     }
@@ -229,5 +245,13 @@ public class ApiFactory_1_0 implements ApiFactory {
 
     TaglineListProcessor_1_0 getTaglineListProcessor() {
         return taglineListProcessor;
+    }
+
+    AkaListProcessor_1_0 getAkaListProcessor() {
+        return akaListProcessor;
+    }
+
+    AkaProcessor_1_0 getAkaProcessor() {
+        return akaProcessor;
     }
 }

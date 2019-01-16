@@ -11,13 +11,14 @@ import java.util.List;
 /**
  * @author boyko_vn at 15.01.2019
  */
-public class MovieListProcessor_1_0 extends AbstractApiProcessor_1_0 {
+public class MovieListProcessor_1_0 extends AbstractApiProcessor_1_0<MovieList, MovieListDataType> {
 
     public MovieListProcessor_1_0(ApiFactory_1_0 apiFactory) {
         super(apiFactory);
     }
 
-    Task taskByMovieListDataType(MovieListDataType movieListDataType) {
+    @Override
+    Task taskByDataType(MovieListDataType movieListDataType) {
         Task t = new Task();
         t.setDataType(movieListDataType);
         switch (movieListDataType) {
@@ -40,12 +41,12 @@ public class MovieListProcessor_1_0 extends AbstractApiProcessor_1_0 {
                         if (!getApiFactory().getMovieDataTypeSet().contains(MovieDataType.ID)) {
                             getApiFactory().getMovieDataTypeSet().add(MovieDataType.ID);
                         }
-                        Task movieTask = getApiFactory().getMovieProcessor().taskByMovieDataType(MovieDataType.ID)
+                        Task movieTask = getApiFactory().getMovieProcessor().taskByDataType(MovieDataType.ID)
                                 .setParentTask(task)
                                 .setUrl(String.format("%s%s", ApiFactory_1_0.URL_MAIN, link.attr("href")));
                         task.getNestedTasks().add(movieTask);
                         getApiFactory().getMovieDataTypeSet().forEach(movieDataType ->
-                                movieTask.getNestedTasks().add(getApiFactory().getMovieProcessor().taskByMovieDataType(movieDataType)
+                                movieTask.getNestedTasks().add(getApiFactory().getMovieProcessor().taskByDataType(movieDataType)
                                 .setParentTask(movieTask)
                                 .setUrl(String.format("%s%s", ApiFactory_1_0.URL_MAIN, link.attr("href")))));
                     }
@@ -55,7 +56,8 @@ public class MovieListProcessor_1_0 extends AbstractApiProcessor_1_0 {
         return t;
     }
 
-    void fillUpMovieList(MovieList movieList, Task task) {
+    @Override
+    void fillUpImdbObject(MovieList movieList, Task task) {
         switch ((MovieListDataType) task.getDataType()) {
             case ELEMENTS:
                 movieList.setUrl(task.getUrl());

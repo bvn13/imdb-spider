@@ -17,13 +17,14 @@ import java.util.regex.Matcher;
 /**
  * @author boyko_vn at 15.01.2019
  */
-public class MovieProcessor_1_0 extends AbstractApiProcessor_1_0 {
+public class MovieProcessor_1_0 extends AbstractApiProcessor_1_0<Movie, MovieDataType> {
 
     public MovieProcessor_1_0(ApiFactory_1_0 apiFactory) {
         super(apiFactory);
     }
 
-    public Task taskByMovieDataType(MovieDataType movieDataType) {
+    @Override
+    Task taskByDataType(MovieDataType movieDataType) {
         Task t = new Task();
         t.setDataType(movieDataType);
         switch (movieDataType) {
@@ -189,7 +190,7 @@ public class MovieProcessor_1_0 extends AbstractApiProcessor_1_0 {
                     if (task.getCssSelectorResult().size() > 0) {
                         Elements links = task.getCssSelectorResult().first().parent().select("span > a:contains(See more)");
                         if (links.size() > 0) {
-                            Task newTask = getApiFactory().getTaglineListProcessor().taskByTaglineListDataType(TaglineListDataType.ELEMENTS)
+                            Task newTask = getApiFactory().getTaglineListProcessor().taskByDataType(TaglineListDataType.ELEMENTS)
                                     .setParentTask(task)
                                     .setUrl(String.format("%s%s", ApiFactory_1_0.URL_MAIN, links.first().attr("href")));
                             task.getNestedTasks().add(newTask);
@@ -202,7 +203,8 @@ public class MovieProcessor_1_0 extends AbstractApiProcessor_1_0 {
     }
 
 
-    void fillUpMovie(Movie movie, Task task) {
+    @Override
+    void fillUpImdbObject(Movie movie, Task task) {
         boolean isDone = false;
         switch ((MovieDataType) task.getDataType()) {
             case ID:

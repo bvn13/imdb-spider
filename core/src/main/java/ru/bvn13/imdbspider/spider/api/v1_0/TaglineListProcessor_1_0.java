@@ -11,13 +11,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author boyko_vn at 15.01.2019
  */
-public class TaglineListProcessor_1_0 extends AbstractApiProcessor_1_0 {
+public class TaglineListProcessor_1_0 extends AbstractApiProcessor_1_0<TaglineList, TaglineListDataType> {
 
     public TaglineListProcessor_1_0(ApiFactory_1_0 apiFactory) {
         super(apiFactory);
     }
 
-    Task taskByTaglineListDataType(TaglineListDataType taglineListDataType) {
+    @Override
+    Task taskByDataType(TaglineListDataType taglineListDataType) {
         Task t = new Task();
         t.setDataType(taglineListDataType);
         switch (taglineListDataType) {
@@ -26,13 +27,13 @@ public class TaglineListProcessor_1_0 extends AbstractApiProcessor_1_0 {
                 AtomicInteger i = new AtomicInteger(0);
                 t.setPostprocess((task, s) -> {
                     for (Element element : task.getCssSelectorResult()) {
-                        Task newTaskId = getApiFactory().getTaglineProcessor().taskByTaglineDataType(TaglineDataType.ID)
+                        Task newTaskId = getApiFactory().getTaglineProcessor().taskByDataType(TaglineDataType.ID)
                                 .setParentTask(task)
                                 .setUrl(task.getUrl())
                                 .setResult(String.format("%d", i.getAndAdd(1)));
                         task.getNestedTasks().add(newTaskId);
 
-                        Task newTaskText = getApiFactory().getTaglineProcessor().taskByTaglineDataType(TaglineDataType.TEXT)
+                        Task newTaskText = getApiFactory().getTaglineProcessor().taskByDataType(TaglineDataType.TEXT)
                                 .setParentTask(task)
                                 .setUrl(task.getUrl())
                                 .setResult(element.text());
@@ -44,7 +45,8 @@ public class TaglineListProcessor_1_0 extends AbstractApiProcessor_1_0 {
         return t;
     }
 
-    void fillUpTaglineList(TaglineList taglineList, Task task) {
+    @Override
+    void fillUpImdbObject(TaglineList taglineList, Task task) {
         switch ((TaglineListDataType) task.getDataType()) {
             case ELEMENTS:
                 taglineList.setUrl(task.getUrl());

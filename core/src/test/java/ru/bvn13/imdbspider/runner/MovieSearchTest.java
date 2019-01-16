@@ -58,68 +58,68 @@ public class MovieSearchTest {
         );
 
 
-        assertTrue(result.getMovies().size() > 0);
+        assertTrue("Got "+result.getMovies().size()+" movies but more than 0 expected", result.getMovies().size() > 0);
         Movie movie = result.getMovies().get(0);
 
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.ID));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.TITLE));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.ORIGINAL_TITLE));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.YEAR));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.STORYLINE));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.RANDOM_TAGLINE));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.GENRES));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.CERTIFICATE));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.OFFICIAL_SITES));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.COUNTRIES));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.LANGUAGES));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.RELEASE_DATE));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.BUDGET));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.CUMULATIVE_WORLDWIDE_GROSS));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.RUNTIME));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.SOUND_MIXES));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.COLOR));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.ASPECT_RATIO));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.POSTER));
-        assertTrue(movie.isDataTypeRetrieved(MovieDataType.TAGLINES));
+        assertTrue("Expected ID field presence", movie.isDataTypeRetrieved(MovieDataType.ID));
+        assertTrue("Expected TITLE field presence", movie.isDataTypeRetrieved(MovieDataType.TITLE));
+        assertTrue("Expected ORIGINAL_TITLE field presence", movie.isDataTypeRetrieved(MovieDataType.ORIGINAL_TITLE));
+        assertTrue("Expected YEAR field presence", movie.isDataTypeRetrieved(MovieDataType.YEAR));
+        assertTrue("Expected STORYLINE field presence", movie.isDataTypeRetrieved(MovieDataType.STORYLINE));
+        assertTrue("Expected RANDOM_TAGLINE field presence", movie.isDataTypeRetrieved(MovieDataType.RANDOM_TAGLINE));
+        assertTrue("Expected GENRES field presence", movie.isDataTypeRetrieved(MovieDataType.GENRES));
+        assertTrue("Expected CERTIFICATE field presence", movie.isDataTypeRetrieved(MovieDataType.CERTIFICATE));
+        assertTrue("Expected OFFICIAL_SITES field presence", movie.isDataTypeRetrieved(MovieDataType.OFFICIAL_SITES));
+        assertTrue("Expected COUNTRIES field presence", movie.isDataTypeRetrieved(MovieDataType.COUNTRIES));
+        assertTrue("Expected LANGUAGES field presence", movie.isDataTypeRetrieved(MovieDataType.LANGUAGES));
+        assertTrue("Expected RELEASE_DATE field presence", movie.isDataTypeRetrieved(MovieDataType.RELEASE_DATE));
+        assertTrue("Expected BUDGET field presence", movie.isDataTypeRetrieved(MovieDataType.BUDGET));
+        assertTrue("Expected CUMULATIVE_WORLDWIDE_GROSS field presence", movie.isDataTypeRetrieved(MovieDataType.CUMULATIVE_WORLDWIDE_GROSS));
+        assertTrue("Expected RUNTIME field presence", movie.isDataTypeRetrieved(MovieDataType.RUNTIME));
+        assertTrue("Expected SOUND_MIXES field presence", movie.isDataTypeRetrieved(MovieDataType.SOUND_MIXES));
+        assertTrue("Expected COLOR field presence", movie.isDataTypeRetrieved(MovieDataType.COLOR));
+        assertTrue("Expected ASPECT_RATIO field presence", movie.isDataTypeRetrieved(MovieDataType.ASPECT_RATIO));
+        assertTrue("Expected POSTER field presence", movie.isDataTypeRetrieved(MovieDataType.POSTER));
+        assertTrue("Expected TAGLINES field presence", movie.isDataTypeRetrieved(MovieDataType.TAGLINES));
 
-        assertEquals("0088247", movie.getId());
-        assertEquals("The Terminator", movie.getOriginalTitle());
-        assertEquals(Integer.valueOf(1984), movie.getYear());
+        assertEquals("Expected that first in search result has ID = 0088247, but given: "+movie.getId(), "0088247", movie.getId());
+        assertEquals("Expected movie name: The Terminator, but given: "+movie.getOriginalTitle(), "The Terminator", movie.getOriginalTitle());
+        assertEquals("Expected year = "+movie.getYear(), Integer.valueOf(1984), movie.getYear());
 
-        assertEquals(TERMINATOR_STORYLINE, movie.getStoryline());
+        assertEquals("Invalid storyline", TERMINATOR_STORYLINE, movie.getStoryline());
         //assertEquals(TERMINATOR_TAGLINES, movie.getRandomTagline());
-        assertTrue(movie.getGenres().contains("Action"));
-        assertTrue(movie.getGenres().contains("Sci-Fi"));
+        assertTrue("Expected that genre Action is present", movie.getGenres().contains("Action"));
+        assertTrue("Expected that genre Sci-Fi is present", movie.getGenres().contains("Sci-Fi"));
 
-        assertEquals("16+", movie.getCertificate());
+        assertEquals("Expected that certificate is 16+ but given: "+movie.getCertificate(), "16+", movie.getCertificate());
 
         //assertTrue(movie.getOfficialSites().contains("Facebook"));
-        assertTrue(movie.getOfficialSites().size() > 0);
-        assertEquals("Facebook", movie.getOfficialSites().get(0).getTitle());
+        assertTrue("Expected than at least one site is present", movie.getOfficialSites().size() > 0);
+        assertEquals("Expected that first site is Facebook", "Facebook", movie.getOfficialSites().get(0).getTitle());
         //assertEquals(TERMINATOR_FACEBOOK_URL, movie.getOfficialSites().get(0).getUrl()); //not comparable, dynamic link
 
-        assertTrue(movie.getCountries().size() > 0);
-        assertTrue(movie.getCountries().contains("UK"));
-        assertTrue(movie.getCountries().contains("USA"));
+        assertTrue("Expected at least one country is present", movie.getCountries().size() > 0);
+        assertTrue("Expected country UK", movie.getCountries().contains("UK"));
+        assertTrue("Expected country USA", movie.getCountries().contains("USA"));
 
-        assertTrue(movie.getLanguages().size() > 0);
-        assertTrue(movie.getLanguages().contains("English"));
-        assertTrue(movie.getLanguages().contains("Spanish"));
+        assertTrue("Expected at least one language is present", movie.getLanguages().size() > 0);
+        assertTrue("Expected language English", movie.getLanguages().contains("English"));
+        assertTrue("Expected language Spanish", movie.getLanguages().contains("Spanish"));
 
         assertEquals("26 October 1984 (USA)", movie.getReleaseDate());
 
-        assertEquals("$6,400,000", movie.getBudget());
-        assertEquals("$40,000,000", movie.getCumulativeWorldwideGross());
+        assertEquals("Expected budget: $6,400,000", "$6,400,000", movie.getBudget());
+        assertEquals("Expected Cumulative Worldwide Gross: $40,400,000", "$40,000,000", movie.getCumulativeWorldwideGross());
 
-        assertEquals("107 min", movie.getRuntime());
-        assertEquals("Color", movie.getColor());
-        assertEquals("1.85 : 1", movie.getAspectRatio());
+        assertEquals("Expected runtime: 107 min", "107 min", movie.getRuntime());
+        assertEquals("Expected color: Color", "Color", movie.getColor());
+        assertEquals("Expected aspect ratio: 1.85 : 1","1.85 : 1", movie.getAspectRatio());
 
-        assertEquals(TERMINATOR_POSTER_LINK, movie.getPosterLink());
+        assertEquals("Poster link is not valid", TERMINATOR_POSTER_LINK, movie.getPosterLink());
 
 
         //sound mixes
-        assertTrue(movie.getSoundMixes().size() > 0);
+        assertTrue("Expected at least one sound mix", movie.getSoundMixes().size() > 0);
         boolean hasMono=false, hasDolby=false, hasDTS=false;
         String descrMono="", descrDolby="", descrDTS="";
         for (SoundMix soundMix : movie.getSoundMixes()) {
@@ -129,17 +129,17 @@ public class MovieSearchTest {
                 case "DTS" : hasDTS = true; descrDTS = soundMix.getDescription();  break;
             }
         }
-        assertTrue(hasMono);
-        assertTrue(hasDolby);
-        assertTrue(hasDTS);
-        assertEquals("(original release)", descrMono);
-        assertEquals("(DVD Re-Release)", descrDolby);
-        assertEquals("(DTS HD Master Audio)", descrDTS);
+        assertTrue("Expected sound mix: Mono", hasMono);
+        assertTrue("Expected sound mix: Dolby", hasDolby);
+        assertTrue("Expected sound mix: DTS", hasDTS);
+        assertEquals("Expected Mono sound mix description: (original release), but given: "+descrMono, "(original release)", descrMono);
+        assertEquals("Expected Dolby sound mix description: (DVD Re-Release), but given: "+descrDolby, "(DVD Re-Release)", descrDolby);
+        assertEquals("Expected DTS sound mix description: (DTS HD Master Audio), but given: "+descrDTS, "(DTS HD Master Audio)", descrDTS);
 
 
         // taglines
-        assertNotNull(movie.getTaglineList());
-        assertEquals(5, movie.getTaglineList().getTaglines().size());
+        assertNotNull("Expected that tagline list presence", movie.getTaglineList());
+        assertEquals("Expected 5 taglines but given: "+movie.getTaglineList().getTaglines().size(), 5, movie.getTaglineList().getTaglines().size());
 
         boolean hasTagline1 = false, hasTagline2 = false, hasTagline3 = false, hasTagline4 = false, hasTagline5 = false;
         for (Tagline tagline : movie.getTaglineList().getTaglines()) {
@@ -152,10 +152,10 @@ public class MovieSearchTest {
             }
         }
 
-        assertTrue(hasTagline1);
-        assertTrue(hasTagline2);
-        assertTrue(hasTagline3);
-        assertTrue(hasTagline4);
-        assertTrue(hasTagline5);
+        assertTrue("Expected Tagline 1 presence", hasTagline1);
+        assertTrue("Expected Tagline 2 presence", hasTagline2);
+        assertTrue("Expected Tagline 3 presence", hasTagline3);
+        assertTrue("Expected Tagline 4 presence", hasTagline4);
+        assertTrue("Expected Tagline 5 presence", hasTagline5);
     }
 }

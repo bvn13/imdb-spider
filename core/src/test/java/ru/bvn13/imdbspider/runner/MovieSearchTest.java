@@ -61,6 +61,8 @@ public class MovieSearchTest {
         assertTrue("Got "+result.getMovies().size()+" movies but more than 0 expected", result.getMovies().size() > 0);
         Movie movie = result.getMovies().get(0);
 
+        System.out.println("Testing Movie #"+movie.getId()+", url: "+movie.getUrl());
+
         assertTrue("Expected ID field presence", movie.isDataTypeRetrieved(MovieDataType.ID));
         assertTrue("Expected TITLE field presence", movie.isDataTypeRetrieved(MovieDataType.TITLE));
         assertTrue("Expected ORIGINAL_TITLE field presence", movie.isDataTypeRetrieved(MovieDataType.ORIGINAL_TITLE));

@@ -16,6 +16,8 @@ import java.util.List;
  */
 public interface ApiFactory {
 
+    void setDebug(boolean debug);
+
     List<Task> createTasksForSearchMovieByTitle(String title, int maxCount, EnumSet<MovieDataType> dataTypes) throws ImdbSpiderException;
 
     Task taskByDataType(DataType dataType) throws DataTypeNotSupportedException;

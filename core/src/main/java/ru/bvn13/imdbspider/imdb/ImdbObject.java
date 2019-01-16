@@ -7,6 +7,8 @@ import java.util.EnumSet;
  */
 public abstract class ImdbObject<DT extends Enum<DT> & DataType> {
 
+    protected String html;
+
     protected EnumSet<DT> retrievedDataTypes;
 
     protected String id;
@@ -14,6 +16,14 @@ public abstract class ImdbObject<DT extends Enum<DT> & DataType> {
 
     public ImdbObject() {
         this.initRetrievedDataTypes();
+    }
+
+    public String getHtml() {
+        return html;
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
     }
 
     protected abstract void initRetrievedDataTypes();

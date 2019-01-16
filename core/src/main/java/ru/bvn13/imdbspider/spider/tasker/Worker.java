@@ -7,15 +7,15 @@ import ru.bvn13.imdbspider.spider.extractor.HtmlExtractor;
 import ru.bvn13.imdbspider.spider.processor.HtmlProcessor;
 import ru.bvn13.imdbspider.spider.processor.JsoupHtmlProcessor;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
 
 /**
  * @author boyko_vn at 09.01.2019
  */
 public class Worker {
+
+    private boolean isDebug;
 
     private final String url;
     private final List<Task> tasks;
@@ -31,11 +31,23 @@ public class Worker {
         this.htmlProcessor = new JsoupHtmlProcessor();
     }
 
+    public boolean isDebug() {
+        return isDebug;
+    }
+
+    public void setDebug(boolean debug) {
+        isDebug = debug;
+    }
+
     public Boolean run(Map<String, String> httpRequestHeaders) throws HtmlExtractorException {
 
         final String html = htmlExtractor.getHtml(url, httpRequestHeaders);
 
         tasks.parallelStream().forEach(task -> {
+
+            if (isDebug) {
+                task.setHtml(html);
+            }
 
             try {
                 if (task.getCssSelector() != null && !task.getCssSelector().isEmpty()) {

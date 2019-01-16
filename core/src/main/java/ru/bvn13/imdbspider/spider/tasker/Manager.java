@@ -13,7 +13,17 @@ import java.util.concurrent.*;
  */
 public class Manager {
 
+    private boolean isDebug;
+
     private Map<String, String> httpRequestHeaders = new HashMap<>();
+
+    public boolean isDebug() {
+        return isDebug;
+    }
+
+    public void setDebug(boolean debug) {
+        isDebug = debug;
+    }
 
     public void addHttpRequestHeader(String key, String value) {
         this.httpRequestHeaders.put(key, value);
@@ -38,6 +48,7 @@ public class Manager {
 
         groupedTasks.entrySet().parallelStream().forEach(stringListEntry -> {
             Worker w = new Worker(stringListEntry.getKey(), stringListEntry.getValue());
+            w.setDebug(isDebug);
             try {
                 w.run(httpRequestHeaders);
             } catch (HtmlExtractorException e) {

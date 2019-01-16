@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
  */
 public class ApiFactory_1_0 implements ApiFactory {
 
+    private boolean isDebug;
+
     static final String URL_MAIN = "https://www.imdb.com";
 
     private static final String URL_SEARCH_TITLE = "https://www.imdb.com/find?ref_=nv_sr_fn&q={{title}}&s=tt";
@@ -126,6 +128,12 @@ public class ApiFactory_1_0 implements ApiFactory {
         this.movieProcessor = new MovieProcessor_1_0(this);
         this.taglineListProcessor = new TaglineListProcessor_1_0(this);
         this.taglineProcessor = new TaglineProcessor_1_0(this);
+    }
+
+    @Override
+    public void setDebug(boolean debug) {
+        isDebug = debug;
+        this.movieProcessor.setDebug(isDebug);
     }
 
     @Override

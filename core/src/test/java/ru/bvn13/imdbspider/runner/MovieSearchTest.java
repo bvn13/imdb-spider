@@ -31,6 +31,7 @@ public class MovieSearchTest {
     @BeforeClass
     public static void initClass() {
         spider = ImdbSpider.withApi_1_0()
+                .setDebug(true)
                 .addHttpRequestHeader("Content-Language", "en-EN");
     }
 
@@ -70,6 +71,8 @@ public class MovieSearchTest {
         System.out.println("==========================================");
         System.out.println("MOVIE: \n"+json);
         System.out.println("==========================================");
+        System.out.println("HTML: \n"+movie.getHtml());
+        System.out.println("==========================================");
 
         assertTrue("Expected ID field presence", movie.isDataTypeRetrieved(MovieDataType.ID));
         assertTrue("Expected TITLE field presence", movie.isDataTypeRetrieved(MovieDataType.TITLE));
@@ -93,7 +96,7 @@ public class MovieSearchTest {
         assertTrue("Expected TAGLINES field presence", movie.isDataTypeRetrieved(MovieDataType.TAGLINES));
 
         assertEquals("Expected that first in search result has ID = 0088247, but given: "+movie.getId(), "0088247", movie.getId());
-        assertEquals("Expected movie name: The Terminator, but given: "+movie.getOriginalTitle(), "The Terminator", movie.getOriginalTitle());
+        assertEquals("Expected original movie name: The Terminator, but given: "+movie.getOriginalTitle(), "The Terminator", movie.getOriginalTitle());
         assertEquals("Expected year = "+movie.getYear(), Integer.valueOf(1984), movie.getYear());
 
         assertEquals("Invalid storyline", TERMINATOR_STORYLINE, movie.getStoryline());

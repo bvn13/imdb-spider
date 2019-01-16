@@ -191,6 +191,9 @@ public class MovieProcessor_1_0 extends AbstractApiProcessor_1_0 {
         boolean isDone = false;
         switch ((MovieDataType) task.getDataType()) {
             case ID:
+                if (isDebug) {
+                    movie.setHtml(task.getHtml());
+                }
                 movie.setUrl(task.getUrl());
                 movie.setId((String) task.getResult());
                 isDone = true;

@@ -14,6 +14,7 @@ import java.util.function.BiConsumer;
 public class Task {
 
     private String url;
+    private String html;
 
     private DataType dataType;
     private String cssSelector;
@@ -56,6 +57,14 @@ public class Task {
     public Task setUrl(String url) {
         this.url = url;
         return this;
+    }
+
+    public String getHtml() {
+        return html;
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
     }
 
     public String getCssSelector() {

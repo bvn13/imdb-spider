@@ -20,6 +20,8 @@ import java.util.*;
  */
 public class ImdbSpider {
 
+    private boolean isDebug;
+
     private Manager manager;
 
     private ApiFactory apiFactory;
@@ -36,6 +38,17 @@ public class ImdbSpider {
         this.imdbObjectComposerFactory = imdbObjectComposerFactory;
 
         manager = new Manager();
+    }
+
+    public boolean isDebug() {
+        return isDebug;
+    }
+
+    public ImdbSpider setDebug(boolean debug) {
+        isDebug = debug;
+        manager.setDebug(isDebug);
+        apiFactory.setDebug(isDebug);
+        return this;
     }
 
     public ImdbSpider addHttpRequestHeader(String key, String value) {

@@ -10,9 +10,9 @@ But tasks and workers would be nothing without their assistants.
 
 They are: 
 
-- [Extractors](core/src/main/java/ru/bvn13/imdbspider/spider/extractor)
-- [Processors](core/src/main/java/ru/bvn13/imdbspider/spider/processor)
-- [Composers](core/src/main/java/ru/bvn13/imdbspider/spider/composer)
+- [Extractors](src/main/java/ru/bvn13/imdbspider/spider/extractor)
+- [Processors](src/main/java/ru/bvn13/imdbspider/spider/processor)
+- [Composers](src/main/java/ru/bvn13/imdbspider/spider/composer)
 
 
 

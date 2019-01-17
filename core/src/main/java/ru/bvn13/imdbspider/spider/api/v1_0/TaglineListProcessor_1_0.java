@@ -18,8 +18,9 @@ public class TaglineListProcessor_1_0 extends AbstractApiProcessor_1_0<TaglineLi
     }
 
     @Override
-    Task taskByDataType(TaglineListDataType taglineListDataType) {
+    Task taskByDataType(TaglineListDataType taglineListDataType, String imdbObjectParentId) {
         Task t = new Task();
+        t.setImdbObjectParentId(imdbObjectParentId);
         t.setDataType(taglineListDataType);
         switch (taglineListDataType) {
             case ELEMENTS:
@@ -27,13 +28,13 @@ public class TaglineListProcessor_1_0 extends AbstractApiProcessor_1_0<TaglineLi
                 AtomicInteger i = new AtomicInteger(0);
                 t.setPostprocess((task, s) -> {
                     for (Element element : task.getCssSelectorResult()) {
-                        Task newTaskId = getApiFactory().getTaglineProcessor().taskByDataType(TaglineDataType.ID)
+                        Task newTaskId = getApiFactory().getTaglineProcessor().taskByDataType(TaglineDataType.ID, task.getImdbObjectParentId())
                                 .setParentTask(task)
                                 .setUrl(task.getUrl())
                                 .setResult(String.format("%d", i.getAndAdd(1)));
                         task.getNestedTasks().add(newTaskId);
 
-                        Task newTaskText = getApiFactory().getTaglineProcessor().taskByDataType(TaglineDataType.TEXT)
+                        Task newTaskText = getApiFactory().getTaglineProcessor().taskByDataType(TaglineDataType.TEXT, task.getImdbObjectParentId())
                                 .setParentTask(task)
                                 .setUrl(task.getUrl())
                                 .setResult(element.text());

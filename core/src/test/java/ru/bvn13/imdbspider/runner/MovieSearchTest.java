@@ -57,7 +57,8 @@ public class MovieSearchTest {
                 MovieDataType.COLOR,
                 MovieDataType.ASPECT_RATIO,
                 MovieDataType.POSTER,
-                MovieDataType.TAGLINES
+                MovieDataType.TAGLINES,
+                MovieDataType.AKAS
         );
 
 
@@ -94,28 +95,30 @@ public class MovieSearchTest {
         assertTrue("Expected ASPECT_RATIO field presence", movie.isDataTypeRetrieved(MovieDataType.ASPECT_RATIO));
         assertTrue("Expected POSTER field presence", movie.isDataTypeRetrieved(MovieDataType.POSTER));
         assertTrue("Expected TAGLINES field presence", movie.isDataTypeRetrieved(MovieDataType.TAGLINES));
+        assertTrue("Expected AKAS field presence", movie.isDataTypeRetrieved(MovieDataType.AKAS));
 
         assertEquals("Expected that first in search result has ID = 0088247, but given: "+movie.getId(), "0088247", movie.getId());
         assertEquals("Expected original movie name: The Terminator, but given: "+movie.getOriginalTitle(), "The Terminator", movie.getOriginalTitle());
+        //assertTrue("Expected original movie name starts with: The Terminator, but given: "+movie.getOriginalTitle(), movie.getOriginalTitle().startsWith("The Terminator"));
         assertEquals("Expected year = "+movie.getYear(), Integer.valueOf(1984), movie.getYear());
 
         assertEquals("Invalid storyline", TERMINATOR_STORYLINE, movie.getStoryline());
         //assertEquals(TERMINATOR_TAGLINES, movie.getRandomTagline());
-        assertTrue("Expected that genre Action is present", movie.getGenres().contains("Action"));
-        assertTrue("Expected that genre Sci-Fi is present", movie.getGenres().contains("Sci-Fi"));
+        assertTrue("Expected that genre Action was present", movie.getGenres().contains("Action"));
+        assertTrue("Expected that genre Sci-Fi was present", movie.getGenres().contains("Sci-Fi"));
 
         //assertEquals("Expected that certificate is 16+ but given: "+movie.getCertificate(), "16+", movie.getCertificate()); //cannot be blocker - it depends on locale, which IMDB determines on geo-location (it seems)
 
         //assertTrue(movie.getOfficialSites().contains("Facebook"));
-        assertTrue("Expected than at least one site is present", movie.getOfficialSites().size() > 0);
+        assertTrue("Expected than at least one site was present", movie.getOfficialSites().size() > 0);
         assertEquals("Expected that first site is Facebook", "Facebook", movie.getOfficialSites().get(0).getTitle());
         //assertEquals(TERMINATOR_FACEBOOK_URL, movie.getOfficialSites().get(0).getUrl()); //not comparable, dynamic link
 
-        assertTrue("Expected at least one country is present", movie.getCountries().size() > 0);
+        assertTrue("Expected at least one country was present", movie.getCountries().size() > 0);
         assertTrue("Expected country UK", movie.getCountries().contains("UK"));
         assertTrue("Expected country USA", movie.getCountries().contains("USA"));
 
-        assertTrue("Expected at least one language is present", movie.getLanguages().size() > 0);
+        assertTrue("Expected at least one language was present", movie.getLanguages().size() > 0);
         assertTrue("Expected language English", movie.getLanguages().contains("English"));
         assertTrue("Expected language Spanish", movie.getLanguages().contains("Spanish"));
 
@@ -151,7 +154,7 @@ public class MovieSearchTest {
 
 
         // taglines
-        assertNotNull("Expected that tagline list presence", movie.getTaglineList());
+        assertNotNull("Expected that tagline list was present", movie.getTaglineList());
         assertEquals("Expected 5 taglines but given: "+movie.getTaglineList().getTaglines().size(), 5, movie.getTaglineList().getTaglines().size());
 
         boolean hasTagline1 = false, hasTagline2 = false, hasTagline3 = false, hasTagline4 = false, hasTagline5 = false;
@@ -170,5 +173,9 @@ public class MovieSearchTest {
         assertTrue("Expected Tagline 3 presence", hasTagline3);
         assertTrue("Expected Tagline 4 presence", hasTagline4);
         assertTrue("Expected Tagline 5 presence", hasTagline5);
+
+        // akas
+        assertNotNull("Expected that akas list was present", movie.getAkaList());
+        assertEquals(64, movie.getAkaList().getAkas().size());
     }
 }

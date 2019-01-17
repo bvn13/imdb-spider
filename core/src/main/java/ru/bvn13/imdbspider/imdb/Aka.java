@@ -7,6 +7,7 @@ import java.util.EnumSet;
  */
 public class Aka extends ImdbObject<AkaDataType> {
 
+    private String name;
     private String title;
 
     @Override
@@ -20,5 +21,13 @@ public class Aka extends ImdbObject<AkaDataType> {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

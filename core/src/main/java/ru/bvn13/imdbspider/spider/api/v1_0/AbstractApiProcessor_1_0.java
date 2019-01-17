@@ -27,5 +27,17 @@ abstract public class AbstractApiProcessor_1_0<C extends ImdbObject, D extends E
 
     abstract void fillUpImdbObject(C imdbObject, Task task);
 
-    abstract Task taskByDataType(D dataType);
+    Task taskByDataType(D dataType) {
+        return this.taskByDataType(dataType, null);
+    }
+
+    abstract Task taskByDataType(D dataType, String imdbObjectParentId);
+
+    void initializeNestedImdbObjectParentId(Task task, String parentId) {
+        if (task != null) {
+            task.getNestedTasks().forEach(nestedTask -> {
+                nestedTask.setImdbObjectParentId(parentId);
+            });
+        }
+    }
 }

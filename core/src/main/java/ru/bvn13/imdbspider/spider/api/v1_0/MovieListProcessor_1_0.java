@@ -18,8 +18,9 @@ public class MovieListProcessor_1_0 extends AbstractApiProcessor_1_0<MovieList, 
     }
 
     @Override
-    Task taskByDataType(MovieListDataType movieListDataType) {
+    Task taskByDataType(MovieListDataType movieListDataType, String imdbObjectParentId) {
         Task t = new Task();
+        t.setImdbObjectParentId(imdbObjectParentId);
         t.setDataType(movieListDataType);
         switch (movieListDataType) {
             case ELEMENTS:
@@ -41,12 +42,12 @@ public class MovieListProcessor_1_0 extends AbstractApiProcessor_1_0<MovieList, 
                         if (!getApiFactory().getMovieDataTypeSet().contains(MovieDataType.ID)) {
                             getApiFactory().getMovieDataTypeSet().add(MovieDataType.ID);
                         }
-                        Task movieTask = getApiFactory().getMovieProcessor().taskByDataType(MovieDataType.ID)
+                        Task movieTask = getApiFactory().getMovieProcessor().taskByDataType(MovieDataType.ID, task.getImdbObjectParentId())
                                 .setParentTask(task)
                                 .setUrl(String.format("%s%s", ApiFactory_1_0.URL_MAIN, link.attr("href")));
                         task.getNestedTasks().add(movieTask);
                         getApiFactory().getMovieDataTypeSet().forEach(movieDataType ->
-                                movieTask.getNestedTasks().add(getApiFactory().getMovieProcessor().taskByDataType(movieDataType)
+                                movieTask.getNestedTasks().add(getApiFactory().getMovieProcessor().taskByDataType(movieDataType, task.getImdbObjectParentId())
                                 .setParentTask(movieTask)
                                 .setUrl(String.format("%s%s", ApiFactory_1_0.URL_MAIN, link.attr("href")))));
                     }

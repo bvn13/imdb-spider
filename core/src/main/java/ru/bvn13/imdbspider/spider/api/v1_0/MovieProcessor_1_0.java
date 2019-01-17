@@ -3,9 +3,7 @@ package ru.bvn13.imdbspider.spider.api.v1_0;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.bvn13.imdbspider.exceptions.processor.HtmlProcessorException;
-import ru.bvn13.imdbspider.imdb.Movie;
-import ru.bvn13.imdbspider.imdb.MovieDataType;
-import ru.bvn13.imdbspider.imdb.TaglineListDataType;
+import ru.bvn13.imdbspider.imdb.*;
 import ru.bvn13.imdbspider.imdb.accessories.Link;
 import ru.bvn13.imdbspider.imdb.accessories.SoundMix;
 import ru.bvn13.imdbspider.spider.tasker.Task;
@@ -24,8 +22,9 @@ public class MovieProcessor_1_0 extends AbstractApiProcessor_1_0<Movie, MovieDat
     }
 
     @Override
-    Task taskByDataType(MovieDataType movieDataType) {
+    Task taskByDataType(MovieDataType movieDataType, String imdbObjectParentId) {
         Task t = new Task();
+        t.setImdbObjectParentId(imdbObjectParentId);
         t.setDataType(movieDataType);
         switch (movieDataType) {
             case ID:
@@ -34,6 +33,7 @@ public class MovieProcessor_1_0 extends AbstractApiProcessor_1_0<Movie, MovieDat
                     if (matcher.find()) {
                         task.setResultType(String.class);
                         task.setResult(matcher.group(1));
+                        initializeNestedImdbObjectParentId(task, (String) task.getResult());
                     }
                 });
                 break;
@@ -47,7 +47,7 @@ public class MovieProcessor_1_0 extends AbstractApiProcessor_1_0<Movie, MovieDat
                     task.setResultType(String.class);
                     task.setResult("");
                     if (task.getCssSelectorResult().size() > 0) {
-                        task.setResult(task.getCssSelectorResult().first().text());
+                        task.setResult(task.getCssSelectorResult().first().ownText());
                     } else {
                         try {
                             Elements titles = getApiFactory().getHtmlProcessor().process(s, "#title-overview-widget > div.vital > div.title_block > div > div.titleBar > div.title_wrapper > h1"); // like title
@@ -190,12 +190,20 @@ public class MovieProcessor_1_0 extends AbstractApiProcessor_1_0<Movie, MovieDat
                     if (task.getCssSelectorResult().size() > 0) {
                         Elements links = task.getCssSelectorResult().first().parent().select("span > a:contains(See more)");
                         if (links.size() > 0) {
-                            Task newTask = getApiFactory().getTaglineListProcessor().taskByDataType(TaglineListDataType.ELEMENTS)
+                            Task newTask = getApiFactory().getTaglineListProcessor().taskByDataType(TaglineListDataType.ELEMENTS, task.getImdbObjectParentId())
                                     .setParentTask(task)
                                     .setUrl(String.format("%s%s", ApiFactory_1_0.URL_MAIN, links.first().attr("href")));
                             task.getNestedTasks().add(newTask);
                         }
                     }
+                });
+                break;
+            case AKAS:
+                t.setPostprocess((task, s) -> {
+                    Task akasTask = getApiFactory().getAkaListProcessor().taskByDataType(AkaListDataType.ELEMENTS, task.getImdbObjectParentId())
+                            .setParentTask(task)
+                            .setUrl(ApiFactory_1_0.URL_AKAS.replace("{{movie_id}}", t.getImdbObjectParentId()));
+                    task.getNestedTasks().add(akasTask);
                 });
                 break;
         }
@@ -289,6 +297,12 @@ public class MovieProcessor_1_0 extends AbstractApiProcessor_1_0<Movie, MovieDat
                 break;
             case TAGLINES:
                 isDone = true;
+                movie.setTaglineList((TaglineList) task.getResult());
+                break;
+            case AKAS:
+                movie.setAkaList((AkaList) task.getResult());
+                isDone = true;
+                break;
         }
 
         if (isDone) {

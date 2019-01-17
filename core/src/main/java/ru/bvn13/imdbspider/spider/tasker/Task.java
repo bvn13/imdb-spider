@@ -13,8 +13,18 @@ import java.util.function.BiConsumer;
  */
 public class Task {
 
+    private String imdbObjectParentId;
     private String url;
     private String html;
+
+    public enum SOURCE_TYPE {
+        URL,
+        HTML
+    }
+
+    private SOURCE_TYPE sourceType = SOURCE_TYPE.URL;
+
+    private String sourceHtml;
 
     private DataType dataType;
     private String cssSelector;
@@ -50,6 +60,32 @@ public class Task {
         this.dataType = dataType;
     }
 
+    public String getImdbObjectParentId() {
+        return imdbObjectParentId;
+    }
+
+    public void setImdbObjectParentId(String imdbObjectParentId) {
+        this.imdbObjectParentId = imdbObjectParentId;
+    }
+
+    public SOURCE_TYPE getSourceType() {
+        return sourceType;
+    }
+
+    public Task setSourceType(SOURCE_TYPE sourceType) {
+        this.sourceType = sourceType;
+        return this;
+    }
+
+    public String getSourceHtml() {
+        return sourceHtml;
+    }
+
+    public Task setSourceHtml(String sourceHtml) {
+        this.sourceHtml = sourceHtml;
+        return this;
+    }
+
     public String getUrl() {
         return url;
     }
@@ -63,8 +99,9 @@ public class Task {
         return html;
     }
 
-    public void setHtml(String html) {
+    public Task setHtml(String html) {
         this.html = html;
+        return this;
     }
 
     public String getCssSelector() {

@@ -14,8 +14,9 @@ public class TaglineProcessor_1_0 extends AbstractApiProcessor_1_0<Tagline, Tagl
     }
 
     @Override
-    Task taskByDataType(TaglineDataType taglineDataType) {
+    Task taskByDataType(TaglineDataType taglineDataType, String imdbObjectParentId) {
         Task t = new Task();
+        t.setImdbObjectParentId(imdbObjectParentId);
         t.setDataType(taglineDataType);
         switch (taglineDataType) {
             case ID:

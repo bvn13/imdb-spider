@@ -6,6 +6,7 @@ package ru.bvn13.imdbspider.imdb;
 public enum AkaDataType implements DataType {
 
     ID("id"),
+    NAME("name"),
     TITLE("title")
     ;
 

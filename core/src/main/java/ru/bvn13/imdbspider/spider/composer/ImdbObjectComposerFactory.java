@@ -19,6 +19,9 @@ public class ImdbObjectComposerFactory {
     private MovieComposer movieComposer;
     private TaglineListComposer taglineListComposer;
     private TaglineComposer taglineComposer;
+    private AkaListComposer akaListComposer;
+    private AkaComposer akaComposer;
+
 
     public <C extends ImdbObject> ImdbObjectComposer getComposer(Class<C> clazz) throws ComposerNotFoundException {
         if (clazz.isAssignableFrom(MovieList.class)) {
@@ -41,6 +44,16 @@ public class ImdbObjectComposerFactory {
                 taglineComposer = new TaglineComposer(apiFactory, this);
             }
             return taglineComposer;
+        } if (clazz.isAssignableFrom(AkaList.class)) {
+            if (akaListComposer == null) {
+                akaListComposer = new AkaListComposer(apiFactory, this);
+            }
+            return akaListComposer;
+        } if (clazz.isAssignableFrom(Aka.class)) {
+            if (akaComposer == null) {
+                akaComposer = new AkaComposer(apiFactory, this);
+            }
+            return akaComposer;
         }
 
         throw new ComposerNotFoundException(String.format("Composer not found: %s", clazz.getName()));

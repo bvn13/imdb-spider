@@ -1,5 +1,6 @@
 package ru.bvn13.imdbspider.imdb;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -16,6 +17,9 @@ public class AkaList extends ImdbObject<AkaListDataType> {
     }
 
     public List<Aka> getAkas() {
+        if (akas == null) {
+            akas = new ArrayList<>();
+        }
         return akas;
     }
 

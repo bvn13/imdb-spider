@@ -30,6 +30,7 @@ public class ApiFactory_1_0 implements ApiFactory {
     static final String URL_MAIN = "https://www.imdb.com";
 
     private static final String URL_SEARCH_TITLE = "https://www.imdb.com/find?ref_=nv_sr_fn&q={{title}}&s=tt";
+    static final String URL_AKAS = "https://www.imdb.com/title/tt{{movie_id}}/releaseinfo";
 
     static final Pattern PATTERN_MOVIE_ID_FROM_MOVIELIST = Pattern.compile("/title/tt(\\d+)/.*");
 

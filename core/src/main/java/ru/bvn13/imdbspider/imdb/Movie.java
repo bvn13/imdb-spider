@@ -5,8 +5,6 @@ import ru.bvn13.imdbspider.imdb.accessories.SoundMix;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author boyko_vn at 09.01.2019
@@ -33,7 +31,7 @@ public class Movie extends ImdbObject<MovieDataType> {
     private String aspectRatio;
 
     private TaglineList taglineList;
-    private Map<String, String> akas = new ConcurrentHashMap<>(50);
+    private AkaList akaList;
 
     @Override
     protected void initRetrievedDataTypes() {
@@ -192,12 +190,11 @@ public class Movie extends ImdbObject<MovieDataType> {
         this.taglineList = taglineList;
     }
 
-    public Map<String, String> getAkas() {
-        return akas;
+    public AkaList getAkaList() {
+        return akaList;
     }
 
-    public void setAkas(Map<String, String> akas) {
-        this.akas = akas;
+    public void setAkaList(AkaList akaList) {
+        this.akaList = akaList;
     }
-
 }

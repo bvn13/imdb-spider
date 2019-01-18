@@ -18,7 +18,7 @@ The [Runner](runner/README.md) part aims to implement different use cases of sea
 - com.fasterxml.jackson
 - JUnit 4
 
-## Plans and dones
+## Plans and done
 
 - `[+]` - implemented already
 - `[*]` - not implemented fully yet, in development

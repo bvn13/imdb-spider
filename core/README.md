@@ -10,10 +10,14 @@ But tasks and workers would be nothing without their assistants.
 
 They are: 
 
-- [Extractors](src/main/java/ru/bvn13/imdbspider/spider/extractor)
+- [Extractor](src/main/java/ru/bvn13/imdbspider/spider/extractor)
 - [Processors](src/main/java/ru/bvn13/imdbspider/spider/processor)
 - [Composers](src/main/java/ru/bvn13/imdbspider/spider/composer)
 
+
+And the heart of Spider is [API](src/main/java/ru/bvn13/imdbspider/spider/api/v1_0) - the set of processors that parse IMDB html data into Tasks to be composed into [Objects](src/main/java/ru/bvn13/imdbspider/imdb/) after all.
+
+So...
 
 
 

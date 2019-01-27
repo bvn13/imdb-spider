@@ -10,6 +10,7 @@
   <modules>
     <module>core</module>
     <module>runner</module>
+      <module>collection</module>
   </modules>
 
   <name>IMDB-SPIDER :: PARENT</name>
